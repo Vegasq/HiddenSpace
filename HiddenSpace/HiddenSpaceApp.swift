@@ -1,32 +1,16 @@
-//
-//  HiddenSpaceApp.swift
-//  HiddenSpace
-//
-//  Created by Nick Yakovliev on 12/8/23.
-//
-
 import SwiftUI
 import SwiftData
+import GeminiProtocol
 
 @main
 struct HiddenSpaceApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
-        do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
-        }
-    }()
+    init(){
+        URLProtocol.registerClass(GeminiProtocol.self)
+    }
 
     var body: some Scene {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(sharedModelContainer)
     }
 }

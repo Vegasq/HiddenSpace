@@ -9,16 +9,15 @@
 /* Begin PBXBuildFile section */
 		8C5E02B82B236D830085D0A5 /* HiddenSpaceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5E02B72B236D830085D0A5 /* HiddenSpaceApp.swift */; };
 		8C5E02BA2B236D830085D0A5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5E02B92B236D830085D0A5 /* ContentView.swift */; };
-		8C5E02BC2B236D830085D0A5 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5E02BB2B236D830085D0A5 /* Item.swift */; };
 		8C5E02BE2B236D840085D0A5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C5E02BD2B236D840085D0A5 /* Assets.xcassets */; };
 		8C5E02C12B236D840085D0A5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C5E02C02B236D840085D0A5 /* Preview Assets.xcassets */; };
+		8C5E02E12B2384AE0085D0A5 /* GeminiProtocol in Frameworks */ = {isa = PBXBuildFile; productRef = 8C5E02E02B2384AE0085D0A5 /* GeminiProtocol */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		8C5E02B42B236D830085D0A5 /* HiddenSpace.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HiddenSpace.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C5E02B72B236D830085D0A5 /* HiddenSpaceApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddenSpaceApp.swift; sourceTree = "<group>"; };
 		8C5E02B92B236D830085D0A5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		8C5E02BB2B236D830085D0A5 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		8C5E02BD2B236D840085D0A5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8C5E02C02B236D840085D0A5 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -28,6 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8C5E02E12B2384AE0085D0A5 /* GeminiProtocol in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -55,7 +55,6 @@
 			children = (
 				8C5E02B72B236D830085D0A5 /* HiddenSpaceApp.swift */,
 				8C5E02B92B236D830085D0A5 /* ContentView.swift */,
-				8C5E02BB2B236D830085D0A5 /* Item.swift */,
 				8C5E02BD2B236D840085D0A5 /* Assets.xcassets */,
 				8C5E02BF2B236D840085D0A5 /* Preview Content */,
 			);
@@ -86,6 +85,9 @@
 			dependencies = (
 			);
 			name = HiddenSpace;
+			packageProductDependencies = (
+				8C5E02E02B2384AE0085D0A5 /* GeminiProtocol */,
+			);
 			productName = HiddenSpace;
 			productReference = 8C5E02B42B236D830085D0A5 /* HiddenSpace.app */;
 			productType = "com.apple.product-type.application";
@@ -114,6 +116,9 @@
 				Base,
 			);
 			mainGroup = 8C5E02AB2B236D830085D0A5;
+			packageReferences = (
+				8C5E02DF2B2384AE0085D0A5 /* XCRemoteSwiftPackageReference "GeminiProtocol" */,
+			);
 			productRefGroup = 8C5E02B52B236D830085D0A5 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -141,7 +146,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				8C5E02BA2B236D830085D0A5 /* ContentView.swift in Sources */,
-				8C5E02BC2B236D830085D0A5 /* Item.swift in Sources */,
 				8C5E02B82B236D830085D0A5 /* HiddenSpaceApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -348,6 +352,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		8C5E02DF2B2384AE0085D0A5 /* XCRemoteSwiftPackageReference "GeminiProtocol" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/frozendevil/GeminiProtocol.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8C5E02E02B2384AE0085D0A5 /* GeminiProtocol */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8C5E02DF2B2384AE0085D0A5 /* XCRemoteSwiftPackageReference "GeminiProtocol" */;
+			productName = GeminiProtocol;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 8C5E02AC2B236D830085D0A5 /* Project object */;
 }
