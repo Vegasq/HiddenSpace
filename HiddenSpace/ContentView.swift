@@ -23,6 +23,9 @@ struct GeminiTextParser: View {
     }
     
     func addPrefixIfNeeded(url: Substring) -> String {
+        if url.hasPrefix("http://") || url.hasPrefix("https://") {
+            return String(url);
+        }
         if !url.hasPrefix("gemini://") {
             return self.browser.geminiURL + String(url)
         }
@@ -40,71 +43,93 @@ struct GeminiTextParser: View {
         }
     }
     
+    func callback(url: String){
+        if url.hasPrefix("http://") || url.hasPrefix("https://") {
+            UIApplication.shared.open(URL(string: url)!);
+        } else {
+            self.browser.loadPage(url: url);
+        }
+    }
+    
     @ViewBuilder
     func renderLink(line: Substring) -> some View {
         let parts = String(line).replacingOccurrences(of: "\t", with: " ").split(separator: " ", maxSplits: 2, omittingEmptySubsequences: true)
+        let url = self.addPrefixIfNeeded(url: parts[1])
 
         if parts.count == 1 {
             Text(String(line))
         } else if parts.count == 2 {
-            let url = self.addPrefixIfNeeded(url: parts[1])
             Button(action: {
-                self.browser.geminiURL = url;
-                self.browser.fetchGeminiContent();
-                print("GOTO", url, parts)
+                self.callback(url: url);
+                
+//                print("GOTO", url, parts)
             }) {
-                Text(url)
+                HStack {
+                    Text(parts[1]).frame(maxWidth: .infinity, alignment: .leading).multilineTextAlignment(.leading)
+                    Spacer()
+                }
             }
         } else if parts.count >= 3 {
-            let url = self.addPrefixIfNeeded(url: parts[1])
             Button(action: {
-                self.browser.geminiURL = url;
-                self.browser.fetchGeminiContent();
+                self.callback(url: url);
+//                self.browser.loadPage(url: url);
+//                UIApplication.shared.open(URL(string: url)!);
                 print("GOTO", url, parts)
             }) {
-                Text(parts[2])
+                HStack {
+                    Text(parts[2]).frame(maxWidth: .infinity, alignment: .leading).multilineTextAlignment(.leading)
+                    Spacer()
+                }
             }
         }
     }
 }
 
-public class GeminiURLResponse2: URLResponse {
-    var statusCode: GeminiStatusCode
-    var meta: String
-    
-    public override var mimeType: String? {
-        statusCode.isSuccess ? meta : nil
-    }
-    
-    public var metaData: String? {
-        return self.meta
-    }
-    
-    init(url: URL, expectedContentLength: Int, statusCode: GeminiStatusCode, meta: String) {
-        self.statusCode = statusCode
-        self.meta = meta
-        
-        let mimeType = statusCode.isSuccess ? meta : nil
-        super.init(url: url, mimeType: mimeType, expectedContentLength: expectedContentLength, textEncodingName: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
-
 
 struct ContentView: View {
-//    @State var geminiURL = "gemini://geminiprotocol.net/docs/faq.gmifaq-section-1.gmi"
     @State var geminiURL = "gemini://geminiprotocol.net/"
     @State private var responseText = ""
     
     @State private var history: [String] = []
     @State private var historyIndex = 0
 
+    @State private var bookmarks: [String] = []
+    @State var showingBookmarkList = false
+    private let bookmarksKey = "bookmarksKey"
+
     var body: some View {
-        VStack {
+        let dragToRight = DragGesture()
+            .onEnded {
+                if $0.translation.width > 100 {
+                    goBack()
+                }
+            }
+
+        let dragToLeft = DragGesture()
+            .onEnded {
+                if $0.translation.width < -100 {
+                    goForward()
+                }
+            }
+
+
+        return VStack {
+
+
+            ScrollView {
+                GeminiTextParser(text: responseText, browser: self)
+            }
+
             HStack {
+                Button("+") {
+                    saveBookmark()
+                }
+                
+                Button("List") {
+                    listBookmarks()
+                }
+                
+                // Existing UI
                 TextField("Enter Gemini URL", text: $geminiURL)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding()
@@ -120,20 +145,39 @@ struct ContentView: View {
                 Button(">") {
                     goForward()
                 }.disabled(historyIndex >= history.count - 1)
-
-            }
-
-            ScrollView {
-                GeminiTextParser(text: responseText, browser: self)
             }
         }
+        .sheet(isPresented: $showingBookmarkList) {
+            BookmarkListView(bookmarks: $bookmarks, browser: self)
+        }
+        .gesture(dragToRight)
+        .gesture(dragToLeft)
+        .navigationViewStyle(StackNavigationViewStyle())
+        .onAppear(perform: {
+            self.loadBookmarks()
+            self.loadPage(url: self.geminiURL)
+        })
+
+
+    }
+
+    func saveBookmark() {
+        if !bookmarks.contains(geminiURL) {
+            bookmarks.append(geminiURL)
+            UserDefaults.standard.set(bookmarks, forKey: bookmarksKey)
+        }
+    }
+
+
+    func listBookmarks() {
+        showingBookmarkList = true
     }
 
     // In your ContentView
     func fetchGeminiContent() {
         if geminiURL != history.last {
-            history.append(geminiURL)
-            historyIndex = history.count - 1
+            history.append(geminiURL);
+            historyIndex = history.count - 1;
         }
 
         let url = URL(string: self.geminiURL)!
@@ -169,5 +213,33 @@ struct ContentView: View {
             fetchGeminiContent()
         }
     }
+    
+    func loadPage(url: String){
+        self.geminiURL = url;
+        self.fetchGeminiContent();
+    }
 
+    func loadBookmarks() {
+        if let loadedBookmarks = UserDefaults.standard.object(forKey: bookmarksKey) as? [String] {
+            bookmarks = loadedBookmarks
+        }
+    }
+
+}
+
+struct BookmarkListView: View {
+    @Binding var bookmarks: [String]
+    let browser: ContentView
+
+    var body: some View {
+        NavigationView {
+            List(bookmarks, id: \.self) { bookmark in
+                Button(bookmark) {
+                    self.browser.loadPage(url: bookmark)
+                    self.browser.showingBookmarkList = false;
+                }
+            }
+            .navigationBarTitle("Bookmarks", displayMode: .inline)
+        }
+    }
 }
