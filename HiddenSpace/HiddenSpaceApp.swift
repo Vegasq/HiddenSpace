@@ -10,7 +10,7 @@ struct HiddenSpaceApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            HiddenSpaceView()
         }
     }
 }

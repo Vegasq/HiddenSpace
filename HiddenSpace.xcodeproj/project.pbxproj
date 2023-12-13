@@ -8,18 +8,24 @@
 
 /* Begin PBXBuildFile section */
 		8C5E02B82B236D830085D0A5 /* HiddenSpaceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5E02B72B236D830085D0A5 /* HiddenSpaceApp.swift */; };
-		8C5E02BA2B236D830085D0A5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5E02B92B236D830085D0A5 /* ContentView.swift */; };
+		8C5E02BA2B236D830085D0A5 /* HiddenSpaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5E02B92B236D830085D0A5 /* HiddenSpaceView.swift */; };
 		8C5E02BE2B236D840085D0A5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C5E02BD2B236D840085D0A5 /* Assets.xcassets */; };
 		8C5E02C12B236D840085D0A5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C5E02C02B236D840085D0A5 /* Preview Assets.xcassets */; };
 		8C5E02E12B2384AE0085D0A5 /* GeminiProtocol in Frameworks */ = {isa = PBXBuildFile; productRef = 8C5E02E02B2384AE0085D0A5 /* GeminiProtocol */; };
+		8C5E02E42B2A09B80085D0A5 /* ClientConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5E02E32B2A09B80085D0A5 /* ClientConnection.swift */; };
+		8C5E02E62B2A09D00085D0A5 /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5E02E52B2A09D00085D0A5 /* Client.swift */; };
+		8C5E02E82B2A15760085D0A5 /* GeminiTextRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5E02E72B2A15760085D0A5 /* GeminiTextRenderer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		8C5E02B42B236D830085D0A5 /* HiddenSpace.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HiddenSpace.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C5E02B72B236D830085D0A5 /* HiddenSpaceApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddenSpaceApp.swift; sourceTree = "<group>"; };
-		8C5E02B92B236D830085D0A5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		8C5E02B92B236D830085D0A5 /* HiddenSpaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddenSpaceView.swift; sourceTree = "<group>"; };
 		8C5E02BD2B236D840085D0A5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8C5E02C02B236D840085D0A5 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		8C5E02E32B2A09B80085D0A5 /* ClientConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConnection.swift; sourceTree = "<group>"; };
+		8C5E02E52B2A09D00085D0A5 /* Client.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Client.swift; sourceTree = "<group>"; };
+		8C5E02E72B2A15760085D0A5 /* GeminiTextRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiTextRenderer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,10 +59,12 @@
 		8C5E02B62B236D830085D0A5 /* HiddenSpace */ = {
 			isa = PBXGroup;
 			children = (
+				8C5E02E22B2A09A60085D0A5 /* Network */,
 				8C5E02B72B236D830085D0A5 /* HiddenSpaceApp.swift */,
-				8C5E02B92B236D830085D0A5 /* ContentView.swift */,
+				8C5E02B92B236D830085D0A5 /* HiddenSpaceView.swift */,
 				8C5E02BD2B236D840085D0A5 /* Assets.xcassets */,
 				8C5E02BF2B236D840085D0A5 /* Preview Content */,
+				8C5E02E72B2A15760085D0A5 /* GeminiTextRenderer.swift */,
 			);
 			path = HiddenSpace;
 			sourceTree = "<group>";
@@ -67,6 +75,15 @@
 				8C5E02C02B236D840085D0A5 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		8C5E02E22B2A09A60085D0A5 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				8C5E02E32B2A09B80085D0A5 /* ClientConnection.swift */,
+				8C5E02E52B2A09D00085D0A5 /* Client.swift */,
+			);
+			path = Network;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -145,8 +162,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8C5E02BA2B236D830085D0A5 /* ContentView.swift in Sources */,
+				8C5E02E42B2A09B80085D0A5 /* ClientConnection.swift in Sources */,
+				8C5E02BA2B236D830085D0A5 /* HiddenSpaceView.swift in Sources */,
+				8C5E02E62B2A09D00085D0A5 /* Client.swift in Sources */,
 				8C5E02B82B236D830085D0A5 /* HiddenSpaceApp.swift in Sources */,
+				8C5E02E82B2A15760085D0A5 /* GeminiTextRenderer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
