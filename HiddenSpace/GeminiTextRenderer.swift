@@ -78,14 +78,21 @@ struct GeminiTextParser: View {
     }
 
     func addPrefixIfNeeded(url: String) -> String {
-        if url.hasPrefix("http://") || url.hasPrefix("https://") {
-            return String(url);
+        // Check if the URL is already a full URL with a scheme
+        if url.hasPrefix("gemini://") {
+            return url
+        } else {
+            // Get the directory part of the parent URL
+            var directoryURL = self.parentUrl
+            if let lastSlashIndex = directoryURL.lastIndex(of: "/") {
+                directoryURL = String(directoryURL[..<lastSlashIndex])
+            }
+
+            // Append the relative URL to the directory URL
+            return "\(directoryURL)/\(url)"
         }
-        if !url.hasPrefix("gemini://") {
-            return String(self.parentUrl + String(url));
-        }
-        return String(url)
     }
+
     
     func callback(url: String){
         if url.hasPrefix("http://") || url.hasPrefix("https://") {
@@ -135,7 +142,7 @@ struct GeminiTextParser: View {
             Text(line.dropFirst(3).trimmingCharacters(in: .whitespacesAndNewlines)).font(.title3)
         } else if line.starts(with: "##") {
             Text(line.dropFirst(2).trimmingCharacters(in: .whitespacesAndNewlines)).font(.title2)
-        } else if line.starts(with: "##") {
+        } else if line.starts(with: "#") {
             Text(line.dropFirst(1).trimmingCharacters(in: .whitespacesAndNewlines)).font(.title)
         }
     }

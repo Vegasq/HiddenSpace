@@ -11,9 +11,9 @@ struct HiddenSpaceView: View {
     @State private var history: [String] = []
     @State private var historyIndex = 0
 
-    @State private var bookmarks: [String] = []
     @State var showingBookmarkList = false
-    private let bookmarksKey = "bookmarksKey"
+    
+    @ObservedObject var bookmarks = Bookmarks();
 
     var body: some View {
         let dragToRight = DragGesture()
@@ -98,22 +98,18 @@ struct HiddenSpaceView: View {
             .padding(.horizontal)
         }
         .sheet(isPresented: $showingBookmarkList) {
-            BookmarkListView(bookmarks: $bookmarks, browser: self)
+            BookmarkListView(bookmarks: $bookmarks.bookmarks, browser: self)
         }
         .gesture(dragToRight)
         .gesture(dragToLeft)
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear(perform: {
-            self.loadBookmarks()
             self.loadPage(url: self.geminiURL)
         })
     }
 
     func saveBookmark() {
-        if !bookmarks.contains(geminiURL) {
-            bookmarks.append(geminiURL)
-            UserDefaults.standard.set(bookmarks, forKey: bookmarksKey)
-        }
+        self.bookmarks.saveBookmark(url: self.geminiURL);
     }
 
     func listBookmarks() {
@@ -121,7 +117,7 @@ struct HiddenSpaceView: View {
     }
 
     func fetchGeminiContent() {
-        if geminiURL != history.last {
+        if history.contains(geminiURL) == false {
             history.append(geminiURL);
             historyIndex = history.count - 1;
         }
@@ -145,7 +141,7 @@ struct HiddenSpaceView: View {
                 case 20...29:
                     self.responseText = data
                 case 30...39:
-                    self.responseText = "implement redirect:" + data
+                    self.responseText = "Implement redirect:" + data
                 case 40...49:
                     self.responseText = "Temporary failure " + data
                 case 50...59:
@@ -155,25 +151,8 @@ struct HiddenSpaceView: View {
                 default:
                     self.responseText = "Unknown status code \(statusCode)"
             }
-            
         }
     }
-//            
-//            if error != nil {
-//                DispatchQueue.main.async {
-//                    self.responseText = error?.localizedDescription ?? "Unknown error";
-//                    self.responseStatusCode = statusCode;
-//                    self.responseContentType = contentType;
-//                }
-//            } else {
-//                DispatchQueue.main.async {
-//                    self.responseText = data;
-//                    self.responseStatusCode = statusCode;
-//                    self.responseContentType = contentType;
-//                }
-//            }
-//        }
-//    }
 
     func goBack() {
         if historyIndex > 0 {
@@ -194,29 +173,5 @@ struct HiddenSpaceView: View {
     func loadPage(url: String){
         self.geminiURL = url;
         self.fetchGeminiContent();
-    }
-
-    func loadBookmarks() {
-        if let loadedBookmarks = UserDefaults.standard.object(forKey: bookmarksKey) as? [String] {
-            bookmarks = loadedBookmarks
-        }
-    }
-}
-
-
-struct BookmarkListView: View {
-    @Binding var bookmarks: [String]
-    let browser: HiddenSpaceView
-
-    var body: some View {
-        NavigationView {
-            List(bookmarks, id: \.self) { bookmark in
-                Button(bookmark) {
-                    self.browser.loadPage(url: bookmark)
-                    self.browser.showingBookmarkList = false;
-                }
-            }
-            .navigationBarTitle("Bookmarks", displayMode: .inline)
-        }
     }
 }

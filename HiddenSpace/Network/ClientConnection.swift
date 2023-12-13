@@ -83,40 +83,8 @@ class ClientConnection {
     
     private func connectionDidEnd() {
         let (statusCode, contentType, message) = processStatusCode(data: self.data)
-        handleStatusCode(statusCode, message: message)
         self.stop(error: nil, message: message, statusCode: statusCode!, contentType: contentType)
     }
-
-    private func handleStatusCode(_ statusCode: Int?, message: String?) {
-        guard let statusCode = statusCode else {
-            print("Error: Unable to process status code.")
-            return
-        }
-
-        switch statusCode {
-        case 10...19:
-            print("Input expected. Message: \(message ?? "")")
-            // Handle input
-        case 20...29:
-            print("Success. Content type: \(message ?? "")")
-            // Handle successful response
-        case 30...39:
-            print("Redirection. New URI: \(message ?? "")")
-            // Handle redirection
-        case 40...49:
-            print("Temporary failure. Message: \(message ?? "")")
-            // Handle temporary failure
-        case 50...59:
-            print("Permanent failure. Message: \(message ?? "")")
-            // Handle permanent failure
-        case 60...69:
-            print("Client certificate required. Message: \(message ?? "")")
-            // Handle client certificate request
-        default:
-            print("Unknown status code: \(statusCode)")
-        }
-    }
-
     
     private func stop(error: NWError?, message: String, statusCode: Int, contentType: String) {
         self.nwConnection.stateUpdateHandler = nil
