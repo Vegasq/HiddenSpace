@@ -1,6 +1,6 @@
 import SwiftUI
 import Network
-import GeminiProtocol
+
 
 enum LineType {
     case header(String)

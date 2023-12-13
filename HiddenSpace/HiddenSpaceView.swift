@@ -1,11 +1,12 @@
 import SwiftUI
 import Network
-import GeminiProtocol
 
 
 struct HiddenSpaceView: View {
     @State var geminiURL = "gemini://geminiprotocol.net/"
     @State private var responseText = ""
+    @State private var responseContentType = ""
+    @State private var responseStatusCode = 0
     
     @State private var history: [String] = []
     @State private var historyIndex = 0
@@ -37,16 +38,17 @@ struct HiddenSpaceView: View {
                         self.loadPage(url: url);
                     }
                 }
+                .padding(.horizontal)
             }
             
             VStack {
                 HStack {
                     TextField("Enter Gemini URL", text: $geminiURL)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .padding()
-                    Button("Go") {
-                        fetchGeminiContent()
-                    }.padding(.trailing, 20)
+                    Button(action: fetchGeminiContent) {
+                        Image(systemName: "arrow.right")
+                            .padding()
+                    }
                 }
 
                 HStack {
@@ -59,6 +61,12 @@ struct HiddenSpaceView: View {
                         Image(systemName: "arrow.right")
                             .padding()
                     }.disabled(historyIndex >= history.count - 1)
+
+                    Spacer()
+
+                    Text(self.responseStatusCode, format: .number)
+
+                    Text(self.responseContentType)
 
                     Spacer()
 
@@ -76,8 +84,8 @@ struct HiddenSpaceView: View {
                 .buttonStyle(BorderlessButtonStyle())
 
             }
+            .padding(.horizontal)
         }
-        .padding(24)
         .sheet(isPresented: $showingBookmarkList) {
             BookmarkListView(bookmarks: $bookmarks, browser: self)
         }
@@ -86,7 +94,7 @@ struct HiddenSpaceView: View {
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear(perform: {
             self.loadBookmarks()
-//            self.loadPage(url: self.geminiURL)
+            self.loadPage(url: self.geminiURL)
         })
     }
 
@@ -115,19 +123,46 @@ struct HiddenSpaceView: View {
         cl.send(data: (self.geminiURL + "\r\n").data(using: .utf8)!);
     }
 
-    func displayGeminiContent(_ host: String) -> (Error?, Data?) -> Void {
-        return  { error, data in
-            if error != nil {
-                DispatchQueue.main.async {
-                    self.responseText = error?.localizedDescription ?? "Unknown error";
-                }
-            } else if let data = data, let dataString = String(data: data, encoding: .utf8) {
-                DispatchQueue.main.async {
-                    self.responseText = dataString;
-                }
+    func displayGeminiContent(_ host: String) -> (Error?, String, Int, String) -> Void {
+        return  { error, data, statusCode, contentType in
+            self.responseStatusCode = statusCode;
+            self.responseContentType = contentType;
+            
+            switch statusCode {
+                case 10...19:
+                    self.responseText = "Implement Inputs"
+                case 20...29:
+                    self.responseText = data
+                case 30...39:
+                    self.responseText = "implement redirect:" + data
+                case 40...49:
+                    self.responseText = "Temporary failure " + data
+                case 50...59:
+                    self.responseText = "Permanent failure " + data
+                case 60...69:
+                    self.responseText = "Client certificate required. " + data
+                default:
+                    self.responseText = "Unknown status code \(statusCode)"
             }
+            
         }
     }
+//            
+//            if error != nil {
+//                DispatchQueue.main.async {
+//                    self.responseText = error?.localizedDescription ?? "Unknown error";
+//                    self.responseStatusCode = statusCode;
+//                    self.responseContentType = contentType;
+//                }
+//            } else {
+//                DispatchQueue.main.async {
+//                    self.responseText = data;
+//                    self.responseStatusCode = statusCode;
+//                    self.responseContentType = contentType;
+//                }
+//            }
+//        }
+//    }
 
     func goBack() {
         if historyIndex > 0 {
