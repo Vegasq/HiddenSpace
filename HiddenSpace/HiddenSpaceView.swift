@@ -10,6 +10,7 @@ struct HiddenSpaceView: View {
     
     @State private var history: [String] = []
     @State private var historyIndex = 0
+    @State private var scrollToTop = false
 
     @State var showingBookmarkList = false
         
@@ -34,20 +35,27 @@ struct HiddenSpaceView: View {
                 }
             }
 
-        return VStack {
-            ScrollView {
-                GeminiTextParser(text: self.responseText, parentUrl: self.geminiURL) { clickedUrl in
-                    if let url = clickedUrl {
-                        print("URL Clicked: \(url)")
-                        self.loadPage(url: url);
+        return ScrollViewReader { proxy in
+            VStack {
+                ScrollView {
+                    GeminiTextParser(text: self.responseText, parentUrl: self.geminiURL) { clickedUrl in
+                        if let url = clickedUrl {
+                            self.loadPage(url: url);
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+                .id("top")
+                .refreshable {
+                    self.fetchGeminiContent();
+                }            
+                .onChange(of: scrollToTop) { _ in
+                    withAnimation {
+                        proxy.scrollTo(0)
                     }
                 }
-                .padding(.horizontal)
-            }
-            .refreshable {
-                self.fetchGeminiContent();
-            }
-            
+
+
             VStack {
                 HStack {
                     TextField("Enter Gemini URL", text: $geminiURL)
@@ -79,12 +87,6 @@ struct HiddenSpaceView: View {
 
                     Spacer()
 
-//                    Text(self.responseStatusCode, format: .number)
-//
-//                    Text(self.responseContentType)
-//
-//                    Spacer()
-
                     Button(action: saveBookmark) {
                         Image(systemName: "bookmark")
                             .padding()
@@ -113,6 +115,7 @@ struct HiddenSpaceView: View {
         .onAppear(perform: {
             self.loadPage(url: self.geminiURL)
         })
+    }
     }
 
     func saveBookmark() {
@@ -164,6 +167,7 @@ struct HiddenSpaceView: View {
                 default:
                     self.responseText = "Unknown status code \(statusCode)"
             }
+            self.scrollToTop.toggle();
         }
     }
 

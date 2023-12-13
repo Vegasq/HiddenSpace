@@ -7,6 +7,8 @@ enum LineType {
     case link(String)
     case text(String)
     case codeBlock(String)
+    case quote(String)
+    case list(String)
 }
 
 struct TextBlock {
@@ -44,6 +46,10 @@ struct GeminiTextParser: View {
                         blocks.append(TextBlock(type: .header(String(line))))
                     } else if line.starts(with: "=>") {
                         blocks.append(TextBlock(type: .link(String(line))))
+                    } else if line.starts(with: ">") {
+                        blocks.append(TextBlock(type: .quote(String(line))))
+                    } else if line.starts(with: "*") {
+                        blocks.append(TextBlock(type: .list(String(line))))
                     } else {
                         blocks.append(TextBlock(type: .text(String(line))))
                     }
@@ -71,6 +77,10 @@ struct GeminiTextParser: View {
                         renderText(line: line).padding(.bottom, 12)
                     case .codeBlock(let code):
                         renderCodeBlock(code: code).padding(.bottom, 12)
+                    case .quote(let line):
+                        renderQuote(line: line).padding(.bottom, 12)
+                    case .list(let line):
+                        renderList(line: line).padding(.bottom, 12)
                     }
                 }
             }
@@ -148,6 +158,17 @@ struct GeminiTextParser: View {
     func renderText(line: String) -> some View {
         Text(line.trimmingCharacters(in: .whitespacesAndNewlines))
     }
+
+    @ViewBuilder
+    func renderList(line: String) -> some View {
+        let subList = line.replacingOccurrences(of: "*", with: "•")
+        Text(subList.trimmingCharacters(in: .whitespacesAndNewlines))
+    }
+
+    @ViewBuilder
+    func renderQuote(line: String) -> some View {
+        Text(line.trimmingCharacters(in: .whitespacesAndNewlines)).italic()
+    }
     
     @ViewBuilder
     func renderHeader(line: String) -> some View {
@@ -179,11 +200,17 @@ struct GeminiTextParser: View {
 
     @ViewBuilder
     func renderCodeBlock(code: String) -> some View {
-        Text(code)
-            .font(.system(.body, design: .monospaced))
-            .padding()
-            .background(Color.gray.opacity(0.1))
-            .cornerRadius(8)
+        ScrollView(.horizontal, showsIndicators: true) {
+            Text(code)
+                .font(.system(.body, design: .monospaced))
+                .lineLimit(nil) // Allow unlimited lines
+                .fixedSize(horizontal: true, vertical: false) // Fit content horizontally
+                .padding()
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(8)
+        }
     }
+
+
 
 }
