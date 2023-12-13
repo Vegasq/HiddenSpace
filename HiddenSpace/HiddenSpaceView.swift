@@ -12,8 +12,12 @@ struct HiddenSpaceView: View {
     @State private var historyIndex = 0
 
     @State var showingBookmarkList = false
-    
+        
     @ObservedObject var bookmarks = Bookmarks();
+
+    @State var showingUserInput = false
+    @State var userInputTitle = "";
+    @State var userInputUrl = "";
 
     var body: some View {
         let dragToRight = DragGesture()
@@ -75,11 +79,11 @@ struct HiddenSpaceView: View {
 
                     Spacer()
 
-                    Text(self.responseStatusCode, format: .number)
-
-                    Text(self.responseContentType)
-
-                    Spacer()
+//                    Text(self.responseStatusCode, format: .number)
+//
+//                    Text(self.responseContentType)
+//
+//                    Spacer()
 
                     Button(action: saveBookmark) {
                         Image(systemName: "bookmark")
@@ -99,6 +103,9 @@ struct HiddenSpaceView: View {
         }
         .sheet(isPresented: $showingBookmarkList) {
             BookmarkListView(bookmarks: $bookmarks.bookmarks, browser: self)
+        }
+        .sheet(isPresented: $showingUserInput){
+            UserInputView(browser: self);
         }
         .gesture(dragToRight)
         .gesture(dragToLeft)
@@ -138,6 +145,10 @@ struct HiddenSpaceView: View {
             switch statusCode {
                 case 10...19:
                     self.responseText = "Implement Inputs"
+                    self.showingUserInput = true;
+                    self.userInputTitle = contentType;
+                    self.userInputUrl = host;
+                    print("self.userInputUrl", self.userInputUrl);
                 case 20...29:
                     self.responseText = data
                 case 30...39:
@@ -173,5 +184,36 @@ struct HiddenSpaceView: View {
     func loadPage(url: String){
         self.geminiURL = url;
         self.fetchGeminiContent();
+    }
+}
+
+
+struct UserInputView: View {
+    let browser: HiddenSpaceView;
+    @State var userInput = "";
+
+    func encodeURI(string: String) -> String {
+        // Define a character set as per RFC 3986
+        var allowedCharacterSet = CharacterSet.alphanumerics
+        allowedCharacterSet.insert(charactersIn: "-._~")
+
+        // Perform encoding
+        return string.addingPercentEncoding(withAllowedCharacters: allowedCharacterSet) ?? "Invalid input"
+    }
+
+    var body: some View {
+        VStack{
+            Text(self.browser.userInputTitle).font(.title)
+            TextField("User Input:", text: self.$userInput)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .onSubmit {
+                    print(self.userInput);
+                    self.browser.showingUserInput = false;
+                    self.browser.geminiURL = self.browser.userInputUrl + "?" + self.encodeURI(string: self.userInput);
+                    self.browser.fetchGeminiContent()
+                }
+                .frame(height: 100)
+            Spacer()
+        }
     }
 }

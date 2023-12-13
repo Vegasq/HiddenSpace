@@ -100,23 +100,28 @@ class ClientConnection {
             return (nil, "", "Invalid response encoding")
         }
         
-        let firstLine = response.split(separator: "\r\n", maxSplits: 1, omittingEmptySubsequences: true)[0];
-        let components = firstLine.split(separator: " ", maxSplits: 1, omittingEmptySubsequences: true);
-
-        guard let statusCodeString = components.first, let statusCode = Int(statusCodeString) else {
-            return (nil, "", "Invalid status code")
-        }
-        
-        let splitFirstLine = response.split(separator: "\r\n", maxSplits: 2, omittingEmptySubsequences: true);
-
         var contentType = "";
         var message = "";
+        var statusCode = 0;
 
-        if splitFirstLine.count == 2 {
-            contentType = String(splitFirstLine[0].split(separator: " ")[1]);
-            message = String(splitFirstLine[1]);
+        let responseParts = response.split(separator: "\r\n", maxSplits: 1, omittingEmptySubsequences: true);
+        if responseParts.count == 2 {
+            let headerParts = responseParts[0].split(separator: " ", maxSplits: 1, omittingEmptySubsequences: true);
+            if headerParts.count == 2 {
+                contentType = String(headerParts[1]);
+                statusCode = Int(headerParts[0]) ?? 0;
+            }
+            message = String(responseParts[1]);
+        } else if responseParts.count == 1 {
+            let headerParts = responseParts[0].split(separator: " ", maxSplits: 1, omittingEmptySubsequences: true);
+            if headerParts.count == 2 {
+                contentType = String(headerParts[1]);
+                statusCode = Int(headerParts[0]) ?? 0;
+            }
+        } else {
+
         }
-                
+
         return (statusCode, contentType, message)
     }
 

@@ -82,18 +82,31 @@ struct GeminiTextParser: View {
         if url.hasPrefix("gemini://") {
             return url
         } else {
-            // Get the directory part of the parent URL
-            var directoryURL = self.parentUrl
-            if let lastSlashIndex = directoryURL.lastIndex(of: "/") {
-                directoryURL = String(directoryURL[..<lastSlashIndex])
+            // Extract the root URL from the parent URL
+            var rootURL = self.parentUrl
+            if let schemeEndIndex = rootURL.range(of: "://")?.upperBound {
+                if let firstSlashIndex = rootURL[schemeEndIndex...].firstIndex(of: "/") {
+                    rootURL = String(rootURL[..<firstSlashIndex])
+                }
             }
 
-            // Append the relative URL to the directory URL
-            return "\(directoryURL)/\(url)"
+            // Determine if the URL is root-relative or directory-relative
+            if url.hasPrefix("/") {
+                // Append the relative URL to the root URL
+                return "\(rootURL)\(url)"
+            } else {
+                // Get the directory part of the parent URL
+                var directoryURL = self.parentUrl
+                if let lastSlashIndex = directoryURL.lastIndex(of: "/") {
+                    directoryURL = String(directoryURL[..<lastSlashIndex])
+                }
+
+                // Append the relative URL to the directory URL
+                return "\(directoryURL)/\(url)"
+            }
         }
     }
 
-    
     func callback(url: String){
         if url.hasPrefix("http://") || url.hasPrefix("https://") {
             UIApplication.shared.open(URL(string: url)!);
