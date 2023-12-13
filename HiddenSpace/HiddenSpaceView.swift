@@ -51,23 +51,31 @@ struct HiddenSpaceView: View {
                 }
 
                 HStack {
-                    Button("[<]") {
-                        goBack()
+                    Button(action: goBack) {
+                        Image(systemName: "arrow.left")
+                            .padding()
                     }.disabled(historyIndex <= 0)
 
-                    Button("[>]") {
-                        goForward()
+                    Button(action: goForward) {
+                        Image(systemName: "arrow.right")
+                            .padding()
                     }.disabled(historyIndex >= history.count - 1)
 
                     Spacer()
 
-                    Button("Save") {
-                        saveBookmark()
+                    Button(action: saveBookmark) {
+                        Image(systemName: "bookmark")
+                            .padding()
                     }
-                    Button("List") {
-                        listBookmarks()
+
+                    Button(action: listBookmarks) {
+                        Image(systemName: "list.bullet")
+                            .padding()
                     }
                 }
+                .padding(.horizontal)
+                .buttonStyle(BorderlessButtonStyle())
+
             }
         }
         .padding(24)
@@ -79,7 +87,7 @@ struct HiddenSpaceView: View {
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear(perform: {
             self.loadBookmarks()
-            self.loadPage(url: self.geminiURL)
+//            self.loadPage(url: self.geminiURL)
         })
     }
 
