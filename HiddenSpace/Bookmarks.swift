@@ -28,6 +28,11 @@ class Bookmarks: ObservableObject {
             UserDefaults.standard.set(self.bookmarks, forKey: self.bookmarksKey)
         }
     }
+    
+    func removeBookmark(at indices: IndexSet) {
+        bookmarks.remove(atOffsets: indices)
+        UserDefaults.standard.set(bookmarks, forKey: bookmarksKey)
+    }
 }
 
 
@@ -37,13 +42,21 @@ struct BookmarkListView: View {
 
     var body: some View {
         NavigationView {
-            List(bookmarks, id: \.self) { bookmark in
-                Button(bookmark) {
-                    self.browser.loadPage(url: bookmark)
-                    self.browser.showingBookmarkList = false;
+            List {
+                ForEach(self.browser.bookmarks.bookmarks, id: \.self) { bookmark in
+                    Button(bookmark) {
+                        self.browser.loadPage(url: bookmark)
+                        self.browser.showingBookmarkList = false
+                    }
                 }
+                .onDelete(perform: removeBookmarks)
             }
             .navigationBarTitle("Bookmarks", displayMode: .inline)
         }
     }
+
+    private func removeBookmarks(at offsets: IndexSet) {
+        self.browser.bookmarks.removeBookmark(at: offsets)
+    }
+
 }
