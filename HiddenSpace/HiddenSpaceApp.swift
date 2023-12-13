@@ -1,12 +1,9 @@
 import SwiftUI
 import SwiftData
-import GeminiProtocol
 
 @main
 struct HiddenSpaceApp: App {
-    init(){
-        URLProtocol.registerClass(GeminiProtocol.self)
-    }
+    init(){}
 
     var body: some Scene {
         WindowGroup {

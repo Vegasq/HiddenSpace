@@ -32,7 +32,6 @@ struct HiddenSpaceView: View {
         return VStack {
             ScrollView {
                 GeminiTextParser(text: self.responseText, parentUrl: self.geminiURL) { clickedUrl in
-                    // Implement your URL click handling logic here
                     if let url = clickedUrl {
                         print("URL Clicked: \(url)")
                         self.loadPage(url: url);
