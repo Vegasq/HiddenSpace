@@ -40,11 +40,17 @@ struct HiddenSpaceView: View {
                 }
                 .padding(.horizontal)
             }
+            .refreshable {
+                self.fetchGeminiContent();
+            }
             
             VStack {
                 HStack {
                     TextField("Enter Gemini URL", text: $geminiURL)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .onSubmit {
+                            self.fetchGeminiContent();
+                        }
                     Button(action: fetchGeminiContent) {
                         Image(systemName: "arrow.right")
                             .padding()
@@ -61,6 +67,11 @@ struct HiddenSpaceView: View {
                         Image(systemName: "arrow.right")
                             .padding()
                     }.disabled(historyIndex >= history.count - 1)
+
+                    Button(action: fetchGeminiContent) {
+                        Image(systemName: "arrow.clockwise")
+                            .padding()
+                    }
 
                     Spacer()
 
