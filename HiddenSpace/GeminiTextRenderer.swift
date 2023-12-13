@@ -79,7 +79,7 @@ struct GeminiTextParser: View {
 
     func addPrefixIfNeeded(url: String) -> String {
         // Check if the URL is already a full URL with a scheme
-        if url.hasPrefix("gemini://") {
+        if url.hasPrefix("gemini://") || url.hasPrefix("http://") || url.hasPrefix("https://") {
             return url
         } else {
             // Extract the root URL from the parent URL

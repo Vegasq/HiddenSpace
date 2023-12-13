@@ -152,7 +152,9 @@ struct HiddenSpaceView: View {
                 case 20...29:
                     self.responseText = data
                 case 30...39:
-                    self.responseText = "Implement redirect:" + data
+                    self.responseText = "Redirecting to " + contentType
+                    self.geminiURL = contentType;
+                    self.fetchGeminiContent();
                 case 40...49:
                     self.responseText = "Temporary failure " + data
                 case 50...59:
