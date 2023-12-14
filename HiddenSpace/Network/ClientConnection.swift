@@ -11,7 +11,6 @@ import Foundation
 import Network
 
 
-
 class ClientConnection {
     
     let nwConnection: NWConnection;
@@ -94,21 +93,15 @@ class ClientConnection {
     }
     
     func extractFirstLineAndRemainingData(from data: Data) -> (firstLine: String, remainingData: Data)? {
-        // Define the CRLF data sequence
         let crlfData = "\r\n".data(using: .utf8)!
 
-        // Find the range of the CRLF data sequence
         if let range = data.range(of: crlfData) {
-            // Extract the part of the data up to CRLF for the first line
             let firstLineData = data.subdata(in: data.startIndex..<range.lowerBound)
-            // Convert the first line data to a string
             if let firstLine = String(data: firstLineData, encoding: .utf8) {
-                // Extract the remaining data after CRLF
                 let remainingData = data.subdata(in: range.upperBound..<data.endIndex)
                 return (firstLine, remainingData)
             }
         }
-        // Return nil if CRLF is not found or if the conversion to string fails
         return nil
     }
 

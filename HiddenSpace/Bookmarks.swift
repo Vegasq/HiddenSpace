@@ -9,39 +9,6 @@ import Foundation
 import SwiftUI
 
 
-class Bookmarks: ObservableObject {
-    @Published var bookmarks: [String];
-    @Published var bookmarksKey: String;
-
-    init(){
-        self.bookmarksKey = "bookmarksKey";
-        self.bookmarks = [];
-        
-        if let loadedBookmarks = UserDefaults.standard.object(forKey: self.bookmarksKey) as? [String] {
-            self.bookmarks = loadedBookmarks;
-            if self.bookmarks.contains("gemini://geminispace.info/") == false {
-                self.bookmarks.append("gemini://geminispace.info/")
-            }
-            if self.bookmarks.contains("gemini://mozz.us/") == false {
-                self.bookmarks.append("gemini://mozz.us/")
-            }
-        }
-    }
-
-    func saveBookmark(url: String) {
-        if !self.bookmarks.contains(url) {
-            self.bookmarks.append(url)
-            UserDefaults.standard.set(self.bookmarks, forKey: self.bookmarksKey)
-        }
-    }
-    
-    func removeBookmark(at indices: IndexSet) {
-        bookmarks.remove(atOffsets: indices)
-        UserDefaults.standard.set(bookmarks, forKey: bookmarksKey)
-    }
-}
-
-
 struct BookmarkListView: View {
     @Binding var bookmarks: [String]
     let browser: HiddenSpaceView
@@ -49,20 +16,26 @@ struct BookmarkListView: View {
     var body: some View {
         NavigationView {
             List {
-                ForEach(self.browser.bookmarks.bookmarks, id: \.self) { bookmark in
+                ForEach(self.browser.settings.bookmarks, id: \.self) { bookmark in
                     Button(bookmark) {
                         self.browser.loadPage(url: bookmark)
                         self.browser.showingBookmarkList = false
                     }
                 }
                 .onDelete(perform: removeBookmarks)
+                .onMove(perform: moveBookmarks) // Add this line
             }
             .navigationBarTitle("Bookmarks", displayMode: .inline)
+            .navigationBarItems(trailing: EditButton()) // Add an Edit button
         }
     }
 
     private func removeBookmarks(at offsets: IndexSet) {
-        self.browser.bookmarks.removeBookmark(at: offsets)
+        self.browser.settings.removeBookmark(at: offsets)
     }
 
+    private func moveBookmarks(from source: IndexSet, to destination: Int) {
+        self.browser.settings.moveBookmark(from: source, to: destination)
+    }
 }
+

@@ -11,12 +11,14 @@
 		8C5E02BA2B236D830085D0A5 /* HiddenSpaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5E02B92B236D830085D0A5 /* HiddenSpaceView.swift */; };
 		8C5E02BE2B236D840085D0A5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C5E02BD2B236D840085D0A5 /* Assets.xcassets */; };
 		8C5E02C12B236D840085D0A5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C5E02C02B236D840085D0A5 /* Preview Assets.xcassets */; };
-		8C5E02E12B2384AE0085D0A5 /* GeminiProtocol in Frameworks */ = {isa = PBXBuildFile; productRef = 8C5E02E02B2384AE0085D0A5 /* GeminiProtocol */; };
 		8C5E02E42B2A09B80085D0A5 /* ClientConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5E02E32B2A09B80085D0A5 /* ClientConnection.swift */; };
 		8C5E02E62B2A09D00085D0A5 /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5E02E52B2A09D00085D0A5 /* Client.swift */; };
 		8C5E02E82B2A15760085D0A5 /* GeminiTextRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5E02E72B2A15760085D0A5 /* GeminiTextRenderer.swift */; };
 		8C5E02EA2B2A44120085D0A5 /* Bookmarks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5E02E92B2A44120085D0A5 /* Bookmarks.swift */; };
 		8C621D5E2B2A92B8003367E9 /* UserInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C621D5D2B2A92B8003367E9 /* UserInputView.swift */; };
+		8C621D602B2B671D003367E9 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C621D5F2B2B671D003367E9 /* SettingsView.swift */; };
+		8C65720E2B2B94A40076D5CD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8C65720D2B2B94A40076D5CD /* LaunchScreen.storyboard */; };
+		8C6572102B2BA4F40076D5CD /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C65720F2B2BA4F40076D5CD /* HistoryView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +32,10 @@
 		8C5E02E72B2A15760085D0A5 /* GeminiTextRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiTextRenderer.swift; sourceTree = "<group>"; };
 		8C5E02E92B2A44120085D0A5 /* Bookmarks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bookmarks.swift; sourceTree = "<group>"; };
 		8C621D5D2B2A92B8003367E9 /* UserInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInputView.swift; sourceTree = "<group>"; };
+		8C621D5F2B2B671D003367E9 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		8C65720C2B2B93F40076D5CD /* HiddenSpace.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HiddenSpace.entitlements; sourceTree = "<group>"; };
+		8C65720D2B2B94A40076D5CD /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		8C65720F2B2BA4F40076D5CD /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,7 +43,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8C5E02E12B2384AE0085D0A5 /* GeminiProtocol in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -63,6 +68,7 @@
 		8C5E02B62B236D830085D0A5 /* HiddenSpace */ = {
 			isa = PBXGroup;
 			children = (
+				8C65720C2B2B93F40076D5CD /* HiddenSpace.entitlements */,
 				8C5E02E22B2A09A60085D0A5 /* Network */,
 				8C5E02B72B236D830085D0A5 /* HiddenSpaceApp.swift */,
 				8C5E02B92B236D830085D0A5 /* HiddenSpaceView.swift */,
@@ -71,6 +77,9 @@
 				8C5E02E72B2A15760085D0A5 /* GeminiTextRenderer.swift */,
 				8C5E02E92B2A44120085D0A5 /* Bookmarks.swift */,
 				8C621D5D2B2A92B8003367E9 /* UserInputView.swift */,
+				8C621D5F2B2B671D003367E9 /* SettingsView.swift */,
+				8C65720D2B2B94A40076D5CD /* LaunchScreen.storyboard */,
+				8C65720F2B2BA4F40076D5CD /* HistoryView.swift */,
 			);
 			path = HiddenSpace;
 			sourceTree = "<group>";
@@ -109,7 +118,6 @@
 			);
 			name = HiddenSpace;
 			packageProductDependencies = (
-				8C5E02E02B2384AE0085D0A5 /* GeminiProtocol */,
 			);
 			productName = HiddenSpace;
 			productReference = 8C5E02B42B236D830085D0A5 /* HiddenSpace.app */;
@@ -140,7 +148,6 @@
 			);
 			mainGroup = 8C5E02AB2B236D830085D0A5;
 			packageReferences = (
-				8C5E02DF2B2384AE0085D0A5 /* XCRemoteSwiftPackageReference "GeminiProtocol" */,
 			);
 			productRefGroup = 8C5E02B52B236D830085D0A5 /* Products */;
 			projectDirPath = "";
@@ -156,6 +163,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8C65720E2B2B94A40076D5CD /* LaunchScreen.storyboard in Resources */,
 				8C5E02C12B236D840085D0A5 /* Preview Assets.xcassets in Resources */,
 				8C5E02BE2B236D840085D0A5 /* Assets.xcassets in Resources */,
 			);
@@ -169,11 +177,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				8C5E02E42B2A09B80085D0A5 /* ClientConnection.swift in Sources */,
+				8C621D602B2B671D003367E9 /* SettingsView.swift in Sources */,
 				8C5E02BA2B236D830085D0A5 /* HiddenSpaceView.swift in Sources */,
 				8C5E02E62B2A09D00085D0A5 /* Client.swift in Sources */,
 				8C621D5E2B2A92B8003367E9 /* UserInputView.swift in Sources */,
 				8C5E02B82B236D830085D0A5 /* HiddenSpaceApp.swift in Sources */,
 				8C5E02E82B2A15760085D0A5 /* GeminiTextRenderer.swift in Sources */,
+				8C6572102B2BA4F40076D5CD /* HistoryView.swift in Sources */,
 				8C5E02EA2B2A44120085D0A5 /* Bookmarks.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -305,15 +315,19 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = HiddenSpace/HiddenSpace.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"HiddenSpace/Preview Content\"";
 				DEVELOPMENT_TEAM = 972S46BJ6B;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Hidden Space";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -334,15 +348,19 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = HiddenSpace/HiddenSpace.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"HiddenSpace/Preview Content\"";
 				DEVELOPMENT_TEAM = 972S46BJ6B;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Hidden Space";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -380,25 +398,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		8C5E02DF2B2384AE0085D0A5 /* XCRemoteSwiftPackageReference "GeminiProtocol" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/frozendevil/GeminiProtocol.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		8C5E02E02B2384AE0085D0A5 /* GeminiProtocol */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 8C5E02DF2B2384AE0085D0A5 /* XCRemoteSwiftPackageReference "GeminiProtocol" */;
-			productName = GeminiProtocol;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 8C5E02AC2B236D830085D0A5 /* Project object */;
 }

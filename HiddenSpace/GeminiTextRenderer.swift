@@ -88,11 +88,9 @@ struct GeminiTextParser: View {
     }
 
     func addPrefixIfNeeded(url: String) -> String {
-        // Check if the URL is already a full URL with a scheme
         if url.hasPrefix("gemini://") || url.hasPrefix("http://") || url.hasPrefix("https://") {
             return url
         } else {
-            // Extract the root URL from the parent URL
             var rootURL = self.parentUrl
             if let schemeEndIndex = rootURL.range(of: "://")?.upperBound {
                 if let firstSlashIndex = rootURL[schemeEndIndex...].firstIndex(of: "/") {
@@ -100,18 +98,14 @@ struct GeminiTextParser: View {
                 }
             }
 
-            // Determine if the URL is root-relative or directory-relative
             if url.hasPrefix("/") {
-                // Append the relative URL to the root URL
                 return "\(rootURL)\(url)"
             } else {
-                // Get the directory part of the parent URL
                 var directoryURL = self.parentUrl
                 if let lastSlashIndex = directoryURL.lastIndex(of: "/") {
                     directoryURL = String(directoryURL[..<lastSlashIndex])
                 }
 
-                // Append the relative URL to the directory URL
                 return "\(directoryURL)/\(url)"
             }
         }
@@ -157,27 +151,39 @@ struct GeminiTextParser: View {
     @ViewBuilder
     func renderText(line: String) -> some View {
         Text(line.trimmingCharacters(in: .whitespacesAndNewlines))
+            .textSelection(.enabled)
+
     }
 
     @ViewBuilder
     func renderList(line: String) -> some View {
         let subList = line.replacingOccurrences(of: "*", with: "•")
         Text(subList.trimmingCharacters(in: .whitespacesAndNewlines))
+            .textSelection(.enabled)
+
     }
 
     @ViewBuilder
     func renderQuote(line: String) -> some View {
         Text(line.trimmingCharacters(in: .whitespacesAndNewlines)).italic()
+            .textSelection(.enabled)
+
     }
     
     @ViewBuilder
     func renderHeader(line: String) -> some View {
         if line.starts(with: "###") {
             Text(line.dropFirst(3).trimmingCharacters(in: .whitespacesAndNewlines)).font(.title3)
+                .textSelection(.enabled)
+
         } else if line.starts(with: "##") {
             Text(line.dropFirst(2).trimmingCharacters(in: .whitespacesAndNewlines)).font(.title2)
+                .textSelection(.enabled)
+
         } else if line.starts(with: "#") {
             Text(line.dropFirst(1).trimmingCharacters(in: .whitespacesAndNewlines)).font(.title)
+                .textSelection(.enabled)
+
         }
     }
     
@@ -193,6 +199,8 @@ struct GeminiTextParser: View {
                 Text(description.trimmingCharacters(in: .whitespacesAndNewlines))
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .multilineTextAlignment(.leading)
+                    .textSelection(.enabled)
+
             }
             
         }
@@ -208,6 +216,7 @@ struct GeminiTextParser: View {
                 .padding()
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(8)
+                .textSelection(.enabled)
         }
     }
 }
