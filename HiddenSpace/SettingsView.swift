@@ -10,23 +10,19 @@ import SwiftUI
 
 
 struct SettingsView: View {
-    @Binding var selectedHomepage: String?
-    @Binding var bookmarks: [String]
     @ObservedObject var settings: Settings;
 
     var body: some View {
+
         NavigationView {
             Form {
-                Section(header: Text(String(localized: "Homepage"))) {
-                        Picker(String(localized: "Homepage"), selection: $settings.homepage) {
-                            ForEach(self.bookmarks, id: \.self) {
-                                Text($0)
-                            }
-                        }
-                        .truncationMode(.tail)
-                        .lineLimit(1)
+                Picker("Homepage", selection: $settings.homepage) {
+                    ForEach(self.settings.bookmarks, id: \.self) {
+                        Text($0)
+                    }
                 }
-                
+                .pickerStyle(.navigationLink)
+
                 Section(header: Text(String(localized: "Help"))) {
 
                     Link("Privacy Policy",

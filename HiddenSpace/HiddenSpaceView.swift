@@ -36,7 +36,7 @@ struct HiddenSpaceView: View {
     
     @State private var loadingUrl = "";
 
-    @State private var showingSettings = false
+    @State private var showingSettings = true;
     @State private var selectedHomepage: String?
 
     var body: some View {
@@ -148,7 +148,7 @@ struct HiddenSpaceView: View {
                 UserInputView(browser: self);
             }
             .popover(isPresented: $showingSettings) {
-                SettingsView(selectedHomepage: $selectedHomepage, bookmarks: $settings.bookmarks, settings: self.settings)
+                SettingsView(settings: self.settings)
             }
             .onAppear(perform: {
                 if let homepage = selectedHomepage {

@@ -26,8 +26,8 @@ struct HistoryView: View {
             List {
                 ForEach(self.browser.history.history, id: \.self) { bookmark in
                     Button(bookmark) {
-                        self.browser.loadPage(url: bookmark)
-                        self.browser.showingBookmarkList = false
+                        self.browser.loadPage(url: bookmark);
+                        self.browser.showingHistory = false;
                     }
                 }
             }
