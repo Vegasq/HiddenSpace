@@ -1,6 +1,14 @@
 import SwiftUI
 import Network
 
+#if canImport(UIKit)
+import UIKit // Import for iOS
+typealias PlatformImage = UIImage
+#elseif canImport(AppKit)
+import AppKit // Import for macOS
+typealias PlatformImage = NSImage
+#endif
+
 
 struct HiddenSpaceView: View {
     @State var geminiURL = "gemini://geminiprotocol.net/"
@@ -19,6 +27,8 @@ struct HiddenSpaceView: View {
     @State var showingUserInput = false
     @State var userInputTitle = "";
     @State var userInputUrl = "";
+
+    @State private var image: PlatformImage? = nil;
 
     var body: some View {
         let dragToRight = DragGesture()
@@ -44,6 +54,12 @@ struct HiddenSpaceView: View {
                         }
                     }
                     .padding(.horizontal)
+
+                    if let image = self.image {
+                        Image(uiImage: image)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    }
                 }
                 .id("top")
                 .refreshable {
@@ -55,19 +71,13 @@ struct HiddenSpaceView: View {
                     }
                 }
 
-
             VStack {
-                HStack {
-                    TextField("Enter Gemini URL", text: $geminiURL)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .onSubmit {
-                            self.fetchGeminiContent();
-                        }
-                    Button(action: fetchGeminiContent) {
-                        Image(systemName: "arrow.right")
-                            .padding()
+                TextField("Enter Gemini URL", text: $geminiURL)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .onSubmit {
+                        self.fetchGeminiContent();
                     }
-                }
+                    .shadow(radius: 2)
 
                 HStack {
                     Button(action: goBack) {
@@ -75,10 +85,10 @@ struct HiddenSpaceView: View {
                             .padding()
                     }.disabled(historyIndex <= 0)
 
-                    Button(action: goForward) {
-                        Image(systemName: "arrow.right")
-                            .padding()
-                    }.disabled(historyIndex >= history.count - 1)
+//                    Button(action: goForward) {
+//                        Image(systemName: "arrow.right")
+//                            .padding()
+//                    }.disabled(historyIndex >= history.count - 1)
 
                     Button(action: fetchGeminiContent) {
                         Image(systemName: "arrow.clockwise")
@@ -97,11 +107,13 @@ struct HiddenSpaceView: View {
                             .padding()
                     }
                 }
-                .padding(.horizontal)
+//                .padding(.horizontal)
                 .buttonStyle(BorderlessButtonStyle())
 
             }
-            .padding(.horizontal)
+            .padding()
+            .background(Color.gray.opacity(0.1))
+
         }
         .sheet(isPresented: $showingBookmarkList) {
             BookmarkListView(bookmarks: $bookmarks.bookmarks, browser: self)
@@ -140,11 +152,14 @@ struct HiddenSpaceView: View {
         cl.send(data: (self.geminiURL + "\r\n").data(using: .utf8)!);
     }
 
-    func displayGeminiContent(_ host: String) -> (Error?, String, Int, String) -> Void {
+    func displayGeminiContent(_ host: String) -> (Error?, Data?, Int, String) -> Void {
         return  { error, data, statusCode, contentType in
+            self.image = nil;
+            self.responseText = "";
+
             self.responseStatusCode = statusCode;
             self.responseContentType = contentType;
-            
+
             switch statusCode {
                 case 10...19:
                     self.responseText = "Implement Inputs"
@@ -153,17 +168,36 @@ struct HiddenSpaceView: View {
                     self.userInputUrl = host;
                     print("self.userInputUrl", self.userInputUrl);
                 case 20...29:
-                    self.responseText = data
+                    let contentTypeParts = contentType.split(separator: ";")
+                    switch contentTypeParts[0] {
+                        case "text/gemini":
+                            self.responseText = String(data: data ?? Data(), encoding: .utf8) ?? "";
+                        case "text/plain":
+                            self.responseText = String(data: data ?? Data(), encoding: .utf8) ?? "";
+                        case "image/jpeg":
+                            DispatchQueue.main.async {
+                                self.image = PlatformImage(data: data ?? Data());
+                            }
+                        case "image/png":
+                            DispatchQueue.main.async {
+                                self.image = PlatformImage(data: data ?? Data());
+                            }
+                        default:
+                            print(contentType);
+                    }
+                    if contentType == "text/gemini" {
+                        self.responseText = String(data: data ?? Data(), encoding: .utf8) ?? ""
+                    }
                 case 30...39:
                     self.responseText = "Redirecting to " + contentType
                     self.geminiURL = contentType;
                     self.fetchGeminiContent();
                 case 40...49:
-                    self.responseText = "Temporary failure " + data
+                    self.responseText = "Temporary failure " + (String(data: data ?? Data(), encoding: .utf8) ?? "")
                 case 50...59:
-                    self.responseText = "Permanent failure " + data
+                    self.responseText = "Permanent failure " + (String(data: data ?? Data(), encoding: .utf8) ?? "")
                 case 60...69:
-                    self.responseText = "Client certificate required. " + data
+                    self.responseText = "Client certificate required. " + (String(data: data ?? Data(), encoding: .utf8) ?? "")
                 default:
                     self.responseText = "Unknown status code \(statusCode)"
             }
@@ -173,9 +207,10 @@ struct HiddenSpaceView: View {
 
     func goBack() {
         if historyIndex > 0 {
-            historyIndex -= 1
-            geminiURL = history[historyIndex]
-            fetchGeminiContent()
+            self.historyIndex -= 1;
+            self.geminiURL = history[historyIndex];
+            self.history.removeLast();
+            self.fetchGeminiContent();
         }
     }
 
@@ -190,36 +225,5 @@ struct HiddenSpaceView: View {
     func loadPage(url: String){
         self.geminiURL = url;
         self.fetchGeminiContent();
-    }
-}
-
-
-struct UserInputView: View {
-    let browser: HiddenSpaceView;
-    @State var userInput = "";
-
-    func encodeURI(string: String) -> String {
-        // Define a character set as per RFC 3986
-        var allowedCharacterSet = CharacterSet.alphanumerics
-        allowedCharacterSet.insert(charactersIn: "-._~")
-
-        // Perform encoding
-        return string.addingPercentEncoding(withAllowedCharacters: allowedCharacterSet) ?? "Invalid input"
-    }
-
-    var body: some View {
-        VStack{
-            Text(self.browser.userInputTitle).font(.title)
-            TextField("User Input:", text: self.$userInput)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .onSubmit {
-                    print(self.userInput);
-                    self.browser.showingUserInput = false;
-                    self.browser.geminiURL = self.browser.userInputUrl + "?" + self.encodeURI(string: self.userInput);
-                    self.browser.fetchGeminiContent()
-                }
-                .frame(height: 100)
-            Spacer()
-        }
     }
 }

@@ -14,7 +14,7 @@ class Client {
     let port: NWEndpoint.Port
     
     
-    var dataReceivedCallback: ((NWError?, String, Int, String) -> Void)? = nil
+    var dataReceivedCallback: ((NWError?, Data?, Int, String) -> Void)? = nil
     
     init(host: String, port: UInt16, validateCert: Bool) {
         self.host = NWEndpoint.Host(host)
@@ -45,7 +45,7 @@ class Client {
         connection.send(data: data)
     }
 
-    func didStopCallback(error: NWError?, message: String, statusCode: Int, contentType: String) {
+    func didStopCallback(error: NWError?, message: Data?, statusCode: Int, contentType: String) {
         if let dataReceivedCallback = self.dataReceivedCallback {
             dataReceivedCallback(error, message, statusCode, contentType);
             self.dataReceivedCallback = nil;

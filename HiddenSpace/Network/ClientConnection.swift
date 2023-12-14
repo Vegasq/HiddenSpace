@@ -14,12 +14,10 @@ import Network
 
 class ClientConnection {
     
-    let nwConnection: NWConnection
-    let queue = DispatchQueue(label: "Client connection Q")
-    
-    var read: String
-    
-    var data: Data
+    let nwConnection: NWConnection;
+    let queue = DispatchQueue(label: "Client connection Q");
+    var read: String;
+    var data: Data;
     
     init(nwConnection: NWConnection) {
         self.nwConnection = nwConnection
@@ -27,7 +25,7 @@ class ClientConnection {
         self.data = Data()
     }
     
-    var didStopCallback: ((NWError?, String, Int, String) -> Void)? = nil
+    var didStopCallback: ((NWError?, Data?, Int, String) -> Void)? = nil
     
     func start() {
         nwConnection.stateUpdateHandler = stateDidChange(to:)
@@ -74,19 +72,19 @@ class ClientConnection {
     }
     
     func stop() {
-        stop(error: nil, message: "", statusCode: 0, contentType: "")
+        stop(error: nil, message: nil, statusCode: 0, contentType: "")
     }
     
     private func connectionDidFail(error: NWError) {
-        self.stop(error: error, message: "", statusCode: 0, contentType: "")
+        self.stop(error: error, message: nil, statusCode: 0, contentType: "")
     }
     
     private func connectionDidEnd() {
         let (statusCode, contentType, message) = processStatusCode(data: self.data)
-        self.stop(error: nil, message: message, statusCode: statusCode!, contentType: contentType)
+        self.stop(error: nil, message: message, statusCode: statusCode ?? 0, contentType: contentType)
     }
     
-    private func stop(error: NWError?, message: String, statusCode: Int, contentType: String) {
+    private func stop(error: NWError?, message: Data?, statusCode: Int, contentType: String) {
         self.nwConnection.stateUpdateHandler = nil
         self.nwConnection.cancel()
         if let didStopCallback = self.didStopCallback {
@@ -95,31 +93,38 @@ class ClientConnection {
         }
     }
     
-    func processStatusCode(data: Data) -> (statusCode: Int?, conentType: String, message: String) {
-        guard let response = String(data: data, encoding: .utf8) else {
-            return (nil, "", "Invalid response encoding")
+    func extractFirstLineAndRemainingData(from data: Data) -> (firstLine: String, remainingData: Data)? {
+        // Define the CRLF data sequence
+        let crlfData = "\r\n".data(using: .utf8)!
+
+        // Find the range of the CRLF data sequence
+        if let range = data.range(of: crlfData) {
+            // Extract the part of the data up to CRLF for the first line
+            let firstLineData = data.subdata(in: data.startIndex..<range.lowerBound)
+            // Convert the first line data to a string
+            if let firstLine = String(data: firstLineData, encoding: .utf8) {
+                // Extract the remaining data after CRLF
+                let remainingData = data.subdata(in: range.upperBound..<data.endIndex)
+                return (firstLine, remainingData)
+            }
         }
-        
+        // Return nil if CRLF is not found or if the conversion to string fails
+        return nil
+    }
+
+    func processStatusCode(data: Data) -> (statusCode: Int?, conentType: String, message: Data?) {
         var contentType = "";
-        var message = "";
         var statusCode = 0;
+        var message = Data();
 
-        let responseParts = response.split(separator: "\r\n", maxSplits: 1, omittingEmptySubsequences: true);
-        if responseParts.count == 2 {
-            let headerParts = responseParts[0].split(separator: " ", maxSplits: 1, omittingEmptySubsequences: true);
-            if headerParts.count == 2 {
-                contentType = String(headerParts[1]);
-                statusCode = Int(headerParts[0]) ?? 0;
-            }
-            message = String(responseParts[1]);
-        } else if responseParts.count == 1 {
-            let headerParts = responseParts[0].split(separator: " ", maxSplits: 1, omittingEmptySubsequences: true);
-            if headerParts.count == 2 {
-                contentType = String(headerParts[1]);
-                statusCode = Int(headerParts[0]) ?? 0;
-            }
+        if let result = extractFirstLineAndRemainingData(from: data) {
+            let headerSplit = result.firstLine.split(separator: " ", maxSplits: 1);
+
+            contentType = String(headerSplit[1]);
+            statusCode = Int(headerSplit[0]) ?? 0;
+            message = result.remainingData;
         } else {
-
+            print("CRLF not found in the data, or unable to convert to string.");
         }
 
         return (statusCode, contentType, message)

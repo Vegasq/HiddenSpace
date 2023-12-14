@@ -16,6 +16,7 @@
 		8C5E02E62B2A09D00085D0A5 /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5E02E52B2A09D00085D0A5 /* Client.swift */; };
 		8C5E02E82B2A15760085D0A5 /* GeminiTextRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5E02E72B2A15760085D0A5 /* GeminiTextRenderer.swift */; };
 		8C5E02EA2B2A44120085D0A5 /* Bookmarks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5E02E92B2A44120085D0A5 /* Bookmarks.swift */; };
+		8C621D5E2B2A92B8003367E9 /* UserInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C621D5D2B2A92B8003367E9 /* UserInputView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		8C5E02E52B2A09D00085D0A5 /* Client.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Client.swift; sourceTree = "<group>"; };
 		8C5E02E72B2A15760085D0A5 /* GeminiTextRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiTextRenderer.swift; sourceTree = "<group>"; };
 		8C5E02E92B2A44120085D0A5 /* Bookmarks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bookmarks.swift; sourceTree = "<group>"; };
+		8C621D5D2B2A92B8003367E9 /* UserInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInputView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +70,7 @@
 				8C5E02BF2B236D840085D0A5 /* Preview Content */,
 				8C5E02E72B2A15760085D0A5 /* GeminiTextRenderer.swift */,
 				8C5E02E92B2A44120085D0A5 /* Bookmarks.swift */,
+				8C621D5D2B2A92B8003367E9 /* UserInputView.swift */,
 			);
 			path = HiddenSpace;
 			sourceTree = "<group>";
@@ -168,6 +171,7 @@
 				8C5E02E42B2A09B80085D0A5 /* ClientConnection.swift in Sources */,
 				8C5E02BA2B236D830085D0A5 /* HiddenSpaceView.swift in Sources */,
 				8C5E02E62B2A09D00085D0A5 /* Client.swift in Sources */,
+				8C621D5E2B2A92B8003367E9 /* UserInputView.swift in Sources */,
 				8C5E02B82B236D830085D0A5 /* HiddenSpaceApp.swift in Sources */,
 				8C5E02E82B2A15760085D0A5 /* GeminiTextRenderer.swift in Sources */,
 				8C5E02EA2B2A44120085D0A5 /* Bookmarks.swift in Sources */,

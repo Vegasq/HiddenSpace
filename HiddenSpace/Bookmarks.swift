@@ -19,6 +19,12 @@ class Bookmarks: ObservableObject {
         
         if let loadedBookmarks = UserDefaults.standard.object(forKey: self.bookmarksKey) as? [String] {
             self.bookmarks = loadedBookmarks;
+            if self.bookmarks.contains("gemini://geminispace.info/") == false {
+                self.bookmarks.append("gemini://geminispace.info/")
+            }
+            if self.bookmarks.contains("gemini://mozz.us/") == false {
+                self.bookmarks.append("gemini://mozz.us/")
+            }
         }
     }
 

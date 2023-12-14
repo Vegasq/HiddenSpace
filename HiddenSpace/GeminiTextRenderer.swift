@@ -210,7 +210,4 @@ struct GeminiTextParser: View {
                 .cornerRadius(8)
         }
     }
-
-
-
 }
