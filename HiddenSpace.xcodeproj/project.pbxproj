@@ -68,6 +68,7 @@
 		8C5E02B62B236D830085D0A5 /* HiddenSpace */ = {
 			isa = PBXGroup;
 			children = (
+				8C65720D2B2B94A40076D5CD /* LaunchScreen.storyboard */,
 				8C65720C2B2B93F40076D5CD /* HiddenSpace.entitlements */,
 				8C5E02E22B2A09A60085D0A5 /* Network */,
 				8C5E02B72B236D830085D0A5 /* HiddenSpaceApp.swift */,
@@ -78,7 +79,6 @@
 				8C5E02E92B2A44120085D0A5 /* Bookmarks.swift */,
 				8C621D5D2B2A92B8003367E9 /* UserInputView.swift */,
 				8C621D5F2B2B671D003367E9 /* SettingsView.swift */,
-				8C65720D2B2B94A40076D5CD /* LaunchScreen.storyboard */,
 				8C65720F2B2BA4F40076D5CD /* HistoryView.swift */,
 			);
 			path = HiddenSpace;

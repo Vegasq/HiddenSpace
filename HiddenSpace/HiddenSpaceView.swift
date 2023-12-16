@@ -36,7 +36,7 @@ struct HiddenSpaceView: View {
     
     @State private var loadingUrl = "";
 
-    @State private var showingSettings = true;
+    @State private var showingSettings = false;
     @State private var selectedHomepage: String?
 
     var body: some View {

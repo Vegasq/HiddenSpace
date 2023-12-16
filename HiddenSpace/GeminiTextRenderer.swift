@@ -18,15 +18,15 @@ struct TextBlock {
 struct GeminiTextParser: View {
     let text: String
     let parentUrl: String
-    
     var urlClickedCallback: ((String?) -> Void)? = nil
+    @State private var scale: CGFloat = 1.0
 
     var textBlocks: [TextBlock] {
         var blocks: [TextBlock] = []
         var currentCodeBlock: String = ""
         var isCodeBlock: Bool = false
 
-        text.replacingOccurrences(of: "\r", with: "\n")
+        text.replacingOccurrences(of: "\r\n", with: "\n")
             .split(separator: "\n", omittingEmptySubsequences: false)
             .forEach { line in
                 if line.starts(with: "```") {
@@ -85,6 +85,13 @@ struct GeminiTextParser: View {
                 }
             }
         }
+        .gesture(
+            MagnificationGesture()
+                .onChanged { value in
+                    self.scale = value
+                }
+        )
+
     }
 
     func addPrefixIfNeeded(url: String) -> String {
@@ -152,6 +159,7 @@ struct GeminiTextParser: View {
     func renderText(line: String) -> some View {
         Text(line.trimmingCharacters(in: .whitespacesAndNewlines))
             .textSelection(.enabled)
+            .font(.system(size: 14 * scale))
 
     }
 
@@ -160,6 +168,7 @@ struct GeminiTextParser: View {
         let subList = line.replacingOccurrences(of: "*", with: "•")
         Text(subList.trimmingCharacters(in: .whitespacesAndNewlines))
             .textSelection(.enabled)
+            .font(.system(size: 14 * scale))
 
     }
 
@@ -167,22 +176,26 @@ struct GeminiTextParser: View {
     func renderQuote(line: String) -> some View {
         Text(line.trimmingCharacters(in: .whitespacesAndNewlines)).italic()
             .textSelection(.enabled)
+            .font(.system(size: 14 * scale))
 
     }
     
     @ViewBuilder
     func renderHeader(line: String) -> some View {
         if line.starts(with: "###") {
-            Text(line.dropFirst(3).trimmingCharacters(in: .whitespacesAndNewlines)).font(.title3)
+            Text(line.dropFirst(3).trimmingCharacters(in: .whitespacesAndNewlines))
                 .textSelection(.enabled)
+                .font(.system(size: 16 * scale))
 
         } else if line.starts(with: "##") {
-            Text(line.dropFirst(2).trimmingCharacters(in: .whitespacesAndNewlines)).font(.title2)
+            Text(line.dropFirst(2).trimmingCharacters(in: .whitespacesAndNewlines))
                 .textSelection(.enabled)
+                .font(.system(size: 18 * scale))
 
         } else if line.starts(with: "#") {
-            Text(line.dropFirst(1).trimmingCharacters(in: .whitespacesAndNewlines)).font(.title)
+            Text(line.dropFirst(1).trimmingCharacters(in: .whitespacesAndNewlines))
                 .textSelection(.enabled)
+                .font(.system(size: 20 * scale))
 
         }
     }
@@ -200,6 +213,7 @@ struct GeminiTextParser: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .multilineTextAlignment(.leading)
                     .textSelection(.enabled)
+                    .font(.system(size: 14 * scale))
 
             }
             
@@ -210,13 +224,14 @@ struct GeminiTextParser: View {
     func renderCodeBlock(code: String) -> some View {
         ScrollView(.horizontal, showsIndicators: true) {
             Text(code)
-                .font(.system(.body, design: .monospaced))
+//                .font(.system(.body, design: .monospaced))
                 .lineLimit(nil) // Allow unlimited lines
                 .fixedSize(horizontal: true, vertical: false) // Fit content horizontally
                 .padding()
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(8)
                 .textSelection(.enabled)
+                .font(.system(size: 14 * scale, design: .monospaced))
         }
     }
 }
