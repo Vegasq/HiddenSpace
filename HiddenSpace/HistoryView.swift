@@ -38,7 +38,8 @@ struct HistoryView: View {
             }
             .navigationBarTitle("History", displayMode: .inline)
             .navigationBarItems(trailing: Button("Clear") {
-                self.browser.history.clear() // Call clear() method on button tap
+                self.browser.history.clear()
+                self.browser.showingHistory = false;
             })
         }
     }
