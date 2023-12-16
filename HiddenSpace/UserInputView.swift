@@ -29,7 +29,7 @@ struct UserInputView: View {
             // Add a Submit Button
             Button(action: {
                 self.browser.showingUserInput = false
-                self.browser.geminiURL = self.browser.userInputUrl + "?" + self.encodeURI(string: self.userInput);
+                self.browser.URL = self.browser.userInputUrl + "?" + self.encodeURI(string: self.userInput);
                 self.browser.fetchGeminiContent();
             }) {
                 Text("Submit")

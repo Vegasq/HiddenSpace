@@ -15,6 +15,11 @@ class History: ObservableObject {
     func add(url: String) {
         self.history.append(url);
     }
+
+    func clear() {
+        history.removeAll()
+    }
+
 }
 
 
@@ -24,15 +29,17 @@ struct HistoryView: View {
     var body: some View {
         NavigationView {
             List {
-                ForEach(self.browser.history.history, id: \.self) { bookmark in
+                ForEach(self.browser.history.history.reversed(), id: \.self) { bookmark in
                     Button(bookmark) {
-                        self.browser.loadPage(url: bookmark);
-                        self.browser.showingHistory = false;
+                        self.browser.loadPage(url: bookmark)
+                        self.browser.showingHistory = false
                     }
                 }
             }
             .navigationBarTitle("History", displayMode: .inline)
+            .navigationBarItems(trailing: Button("Clear") {
+                self.browser.history.clear() // Call clear() method on button tap
+            })
         }
     }
 }
-

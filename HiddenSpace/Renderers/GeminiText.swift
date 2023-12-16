@@ -74,21 +74,22 @@ struct GeminiTextParser: View {
                 Group {
                     switch block.type {
                     case .header(let line):
-                        renderHeader(line: line).padding(.bottom, 12)
+                        renderHeader(line: line).padding(.bottom, 7 * scale)
                     case .link(let line):
-                        renderLink(line: line).padding(.bottom, 12)
+                        renderLink(line: line).padding(.bottom, 7 * scale)
                     case .text(let line):
-                        renderText(line: line).padding(.bottom, 12)
+                        renderText(line: line).padding(.bottom, 7 * scale)
                     case .codeBlock(let code):
-                        renderCodeBlock(code: code).padding(.bottom, 12)
+                        renderCodeBlock(code: code).padding(.bottom, 7 * scale)
                     case .quote(let line):
-                        renderQuote(line: line).padding(.bottom, 12)
+                        renderQuote(line: line).padding(.bottom, 7 * scale)
                     case .list(let line):
-                        renderList(line: line).padding(.bottom, 12)
+                        renderList(line: line).padding(.bottom, 7 * scale)
                     }
                 }
             }
         }
+        .textSelection(.enabled)
         .gesture(
             MagnificationGesture()
                 .onChanged { value in
@@ -99,7 +100,9 @@ struct GeminiTextParser: View {
     }
 
     func addPrefixIfNeeded(url: String) -> String {
+        print (url, self.parentUrl);
         if url.contains("://") || url.starts(with: "mailto:") {
+            print(">", url)
             return url
         } else {
             var rootURL = self.parentUrl
@@ -110,14 +113,26 @@ struct GeminiTextParser: View {
             }
 
             if url.hasPrefix("/") {
-                return "\(rootURL)\(url)"
+                if rootURL.hasSuffix("/") {
+                    print(">", "\(rootURL)\(url)")
+                    return "\(rootURL)\(url)"
+                } else {
+                    print(">", "\(rootURL)/\(url)")
+                    return "\(rootURL)/\(url)"
+                }
             } else {
-                var directoryURL = self.parentUrl
+                var directoryURL = self.parentUrl.replacingOccurrences(of: "gemini://", with: "")
                 if let lastSlashIndex = directoryURL.lastIndex(of: "/") {
                     directoryURL = String(directoryURL[..<lastSlashIndex])
                 }
 
-                return "\(directoryURL)/\(url)"
+                print("directoryURL", directoryURL)
+                print(">", "\(directoryURL)/\(url)")
+                if directoryURL.hasSuffix("/") || url.hasPrefix("/") {
+                    return "gemini://\(directoryURL)\(url)"
+                } else {
+                    return "gemini://\(directoryURL)/\(url)"
+                }
             }
         }
     }
@@ -162,7 +177,6 @@ struct GeminiTextParser: View {
     @ViewBuilder
     func renderText(line: String) -> some View {
         Text(line.trimmingCharacters(in: .whitespacesAndNewlines))
-            .textSelection(.enabled)
             .font(.system(size: 14 * scale))
 
     }
@@ -171,7 +185,6 @@ struct GeminiTextParser: View {
     func renderList(line: String) -> some View {
         let subList = line.replacingOccurrences(of: "*", with: "•")
         Text(subList.trimmingCharacters(in: .whitespacesAndNewlines))
-            .textSelection(.enabled)
             .font(.system(size: 14 * scale))
 
     }
@@ -179,7 +192,6 @@ struct GeminiTextParser: View {
     @ViewBuilder
     func renderQuote(line: String) -> some View {
         Text(line.trimmingCharacters(in: .whitespacesAndNewlines)).italic()
-            .textSelection(.enabled)
             .font(.system(size: 14 * scale))
 
     }
@@ -188,17 +200,14 @@ struct GeminiTextParser: View {
     func renderHeader(line: String) -> some View {
         if line.starts(with: "###") {
             Text(line.dropFirst(3).trimmingCharacters(in: .whitespacesAndNewlines))
-                .textSelection(.enabled)
                 .font(.system(size: 16 * scale))
 
         } else if line.starts(with: "##") {
             Text(line.dropFirst(2).trimmingCharacters(in: .whitespacesAndNewlines))
-                .textSelection(.enabled)
                 .font(.system(size: 18 * scale))
 
         } else if line.starts(with: "#") {
             Text(line.dropFirst(1).trimmingCharacters(in: .whitespacesAndNewlines))
-                .textSelection(.enabled)
                 .font(.system(size: 20 * scale))
 
         }
@@ -212,7 +221,6 @@ struct GeminiTextParser: View {
         Text(description.trimmingCharacters(in: .whitespacesAndNewlines))
             .frame(maxWidth: .infinity, alignment: .leading)
             .multilineTextAlignment(.leading)
-            .textSelection(.enabled)
             .font(.system(size: 14 * scale))
             .foregroundColor(Color.blue)
             .onTapGesture(count: 1, perform: {
@@ -229,7 +237,6 @@ struct GeminiTextParser: View {
                 .padding()
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(8)
-                .textSelection(.enabled)
                 .font(.system(size: 14 * scale, design: .monospaced))
         }
     }

@@ -29,6 +29,10 @@ struct ImageRenderer: View {
                     self.scale = value
                 }
         )
+        .onAppear(){
+            print("display image")
+        }
 
     }
+
 }

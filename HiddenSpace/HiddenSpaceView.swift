@@ -2,67 +2,74 @@ import SwiftUI
 import Network
 
 
-
-
 struct HiddenSpaceView: View {
     @ObservedObject var settings: Settings = Settings();
 
-    @ObservedObject var history: History = History();
-    @State var showingHistory = false;
+    @State var URL = "";
 
-    @State var geminiURL = "";
-//    @State private var responseText = ""
+    // Loaded page content
     @State private var responseContent = Data();
     @State private var responseContentType = ""
     @State private var responseStatusCode = 0
-    
+
+    // Latest visited pods
+    @ObservedObject var history: History = History();
+    @State var showingHistory = false;
+
+    // Data to have workinf back and forward buttons
     @State private var navigationHistory: [String] = []
     @State private var navigationHistoryIndex = 0
     @State private var scrollToTop = false
 
+    // Bookmarks live in settings, this is just a toggle
     @State var showingBookmarkList = false
 
+    // Settings view
+    @State private var showingSettings = false;
+
+    // User Input logic
     @State var showingUserInput = false;
     @State var userInputTitle = "";
     @State var userInputUrl = "";
-
-    @State private var isLoading = false;
     
+    @State private var isLoading = false;
     @State private var loadingUrl = "";
 
-    @State private var showingSettings = false;
     @State private var selectedHomepage: String?
     
-    @State private var renderer: String = "text/gemini";
-
     var body: some View {
-        let dragToRight = DragGesture()
-            .onEnded {
-                if $0.translation.width > 100 {
-                    goBack()
-                }
-            }
-        
-        let dragToLeft = DragGesture()
-            .onEnded {
-                if $0.translation.width < -100 {
-                    goForward()
-                }
-            }
+
+// Something feels off about this part. In use feels unreliable. Need to think more.
+//        let dragToRight = DragGesture()
+//            .onEnded {
+//                if $0.translation.width > 100 {
+//                    goBack()
+//                }
+//            }
+//        
+//        let dragToLeft = DragGesture()
+//            .onEnded {
+//                if $0.translation.width < -100 {
+//                    goForward()
+//                }
+//            }
         
         return ScrollViewReader { proxy in
             VStack {
                 ScrollView {
-                    if renderer == "text/gemini" {
-                        GeminiTextParser(data: self.responseContent, parentUrl: self.geminiURL) { clickedUrl in
+                    if self.responseContentType == "text/gemini" {
+                        GeminiTextParser(data: self.responseContent, parentUrl: self.URL) { clickedUrl in
                             if let url = clickedUrl {
                                 self.loadPage(url: url);
                             }
                         }
                         .padding(.horizontal)
-                    } else if renderer == "image/jpeg" || renderer == "image/png" {
+                    } else if self.responseContentType == "image/jpeg" || self.responseContentType == "image/png" {
                         ImageRenderer(uiimage: self.responseContent)
-                    } else if renderer == "text/plain" {
+                            .onAppear(){
+                                print("Display image")
+                            }
+                    } else if self.responseContentType == "text/plain" {
                         PlainTextParser(data: self.responseContent)
                             .padding(.horizontal)
                     } else {
@@ -81,60 +88,65 @@ struct HiddenSpaceView: View {
                 }
                 
                 VStack{
-                    TextField("Enter Gemini URL", text: $geminiURL)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .onSubmit {
-                            self.fetchGeminiContent();
-                        }
-                        .shadow(radius: 2)
-                        .padding(.top)
-                    
+                    HStack {
+                        TextField("Enter Gemini URL", text: $URL)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .onSubmit {
+                                self.fetchGeminiContent();
+                            }
+                            .shadow(radius: 2)
+                            .frame(height: 40)
+
+                            if isLoading {
+                                ProgressView()
+                                    .padding(.leading)
+                                    .frame(width: 40, height: 40)
+                            } else if self.settings.bookmarks.contains(self.URL) == false {
+                                Button(action: {self.settings.saveBookmark(url: self.URL)}) {
+                                    Image(systemName: "bookmark")
+                                }
+                                .padding(.leading)
+                                .frame(width: 40, height: 40)
+                            }
+
+                    }
+
                     HStack {
                         Button(action: goBack) {
                             Image(systemName: "arrow.left")
                                 .padding(.horizontal)
                         }.disabled(navigationHistoryIndex <= 0)
                         
-                        
-                        Button(action: fetchGeminiContent) {
-                            Image(systemName: "arrow.clockwise")
+                        Button(action: goForward) {
+                            Image(systemName: "arrow.right")
                                 .padding(.horizontal)
-                        }
+                        }.disabled(navigationHistoryIndex >= navigationHistory.count - 1)
                         
-                        if isLoading {
-                            ProgressView();
+                        Button(action: {self.showingHistory = true}) {
+                            Image(systemName: "clock")
+                                .padding()
                         }
-                        
+                    
                         
                         Spacer()
                         
-                        if self.settings.bookmarks.contains(self.geminiURL) == false {
-                            Button(action: {self.settings.saveBookmark(url: self.geminiURL)}) {
-                                Image(systemName: "bookmark")
-                                    .padding(.horizontal)
-                            }
-                        }
                         
                         Button(action: {self.showingBookmarkList = true}) {
                             Image(systemName: "list.bullet")
-                                .padding(.horizontal)
-                        }
-                        Button(action: {self.showingHistory = true}) {
-                            Image(systemName: "clock")
-                                .padding(.horizontal)
+                                .padding()
                         }
                         
                         Button(action: {self.showingSettings = true}) {
                             Image(systemName: "gear")
-                                .padding(.horizontal)
+                                .padding()
                         }
                         
                     }
-                    .padding()
+//                    .padding(.vertical)
                     .buttonStyle(BorderlessButtonStyle())
                     
                 }
-                .padding(.horizontal)
+                .padding()
                 .background(Color.gray.opacity(0.1))
                 
             }
@@ -154,34 +166,41 @@ struct HiddenSpaceView: View {
                 if let homepage = selectedHomepage {
                     self.loadPage(url: homepage)
                 } else {
-                    self.loadPage(url: self.geminiURL)
+                    self.loadPage(url: self.URL)
                 }
             })
-            .gesture(dragToRight)
-            .gesture(dragToLeft)
+//            .gesture(dragToRight)
+//            .gesture(dragToLeft)
             .navigationViewStyle(StackNavigationViewStyle())
             .onAppear(perform: {
-                self.geminiURL = self.settings.homepage;
-                self.loadPage(url: self.geminiURL)
+                self.URL = self.settings.homepage;
+                self.loadPage(url: self.URL)
             })
         }
     }
 
-    func fetchGeminiContent() {
+    func fetchGeminiContent(addToHistory: Bool = true) {
         self.isLoading = true;
 
-        let url = URL(string: self.geminiURL);
+        let url = Foundation.URL(string: self.URL);
         if url == nil {
             return
         }
-        
+
+        if addToHistory {
+            if navigationHistory.contains(self.URL) == false {
+                navigationHistory.append(self.URL);
+                navigationHistoryIndex = navigationHistory.count - 1;
+            }
+        }
+
         let cl = Client(host: url?.host() ?? "", port: UInt16(url?.port ?? 1965), validateCert: false);
-        self.loadingUrl = self.geminiURL;
+        self.loadingUrl = self.URL;
 
         cl.setupSecConnection();
         cl.start();
-        cl.dataReceivedCallback = self.displayGeminiContent(self.geminiURL);
-        cl.send(data: (self.geminiURL + "\r\n").data(using: .utf8)!);
+        cl.dataReceivedCallback = self.displayGeminiContent(self.URL);
+        cl.send(data: (self.URL + "\r\n").data(using: .utf8)!);
     }
 
     func displayGeminiContent(_ host: String) -> (Error?, Data?, Int, String) -> Void {
@@ -194,17 +213,18 @@ struct HiddenSpaceView: View {
             }
             
             self.history.add(url: host);
-            
-            if navigationHistory.contains(self.geminiURL) == false {
-                navigationHistory.append(self.geminiURL);
-                navigationHistoryIndex = navigationHistory.count - 1;
-            }
 
             self.isLoading = false;
             self.responseContent = data ?? Data();
 
             self.responseStatusCode = statusCode;
-            self.responseContentType = contentType;
+            
+            // Ignoring ; lang=en
+            if contentType.split(separator: ";", maxSplits: 1).count == 2 {
+                self.responseContentType = String(contentType.split(separator: ";")[0]);
+            } else {
+                self.responseContentType = contentType;
+            }
 
             switch statusCode {
                 case 10...19:
@@ -217,12 +237,12 @@ struct HiddenSpaceView: View {
                     self.userInputTitle = contentType;
                     self.userInputUrl = host;
                 case 20...29:
-                    print()
+                    print(self.responseContentType);
                 case 30...39:
                     let error = "Redirecting to \(contentType)." + (String(data: data ?? Data(), encoding: .utf8) ?? "");
                     self.responseContent = error.data(using: .utf8)!;
-                    self.geminiURL = contentType;
-                    self.fetchGeminiContent();
+                    self.URL = contentType;
+                    self.fetchGeminiContent(addToHistory: false);
                 case 40...49:
                     let error = "Temporary failure " + (String(data: data ?? Data(), encoding: .utf8) ?? "");
                     self.responseContent = error.data(using: .utf8)!;
@@ -243,23 +263,29 @@ struct HiddenSpaceView: View {
     func goBack() {
         if navigationHistoryIndex > 0 {
             self.navigationHistoryIndex -= 1;
-            self.geminiURL = navigationHistory[navigationHistoryIndex];
-            self.navigationHistory.removeLast();
-            self.fetchGeminiContent();
+            self.URL = navigationHistory[navigationHistoryIndex];
+            self.fetchGeminiContent(addToHistory: false);
         }
     }
 
     func goForward() {
-        if navigationHistoryIndex < navigationHistory.count - 1 {
-            navigationHistoryIndex += 1
-            geminiURL = navigationHistory[navigationHistoryIndex]
-            fetchGeminiContent()
+        if self.navigationHistoryIndex < self.navigationHistory.count - 1 {
+            self.navigationHistoryIndex += 1
+            self.URL = navigationHistory[navigationHistoryIndex];
+            self.fetchGeminiContent(addToHistory: false);
         }
     }
     
     func loadPage(url: String){
-        self.geminiURL = url;
+        self.URL = url;
         self.fetchGeminiContent();
     }
 }
 
+
+struct HiddenSpaceView_Previews: PreviewProvider {
+    static var previews: some View {
+        HiddenSpaceView()
+            .previewDevice("iPhone 12")
+    }
+}
