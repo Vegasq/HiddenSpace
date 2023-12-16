@@ -202,7 +202,6 @@ struct HiddenSpaceView: View {
 
             self.isLoading = false;
             self.image = nil;
-            self.responseText = "";
 
             self.responseStatusCode = statusCode;
             self.responseContentType = contentType;
@@ -220,10 +219,12 @@ struct HiddenSpaceView: View {
                         case "text/plain":
                             self.responseText = String(data: data ?? Data(), encoding: .utf8) ?? "";
                         case "image/jpeg":
+                            self.responseText = "";
                             DispatchQueue.main.async {
                                 self.image = PlatformImage(data: data ?? Data());
                             }
                         case "image/png":
+                            self.responseText = "";
                             DispatchQueue.main.async {
                                 self.image = PlatformImage(data: data ?? Data());
                             }

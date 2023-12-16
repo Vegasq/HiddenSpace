@@ -119,10 +119,10 @@ struct GeminiTextParser: View {
     }
 
     func callback(url: String){
-        if url.hasPrefix("http://") || url.hasPrefix("https://") {
-            UIApplication.shared.open(URL(string: url)!);
-        } else {
+        if url.hasPrefix("gemini://") {
             self.urlClickedCallback!(url);
+        } else {
+            UIApplication.shared.open(URL(string: url)!);
         }
     }
     
@@ -205,26 +205,21 @@ struct GeminiTextParser: View {
         let (url, description) = parseGeminiLink(line)
         let fullUrl = self.addPrefixIfNeeded(url: url)
         
-        Button(action: {
-            self.callback(url: fullUrl);
-        }) {
-            HStack {
-                Text(description.trimmingCharacters(in: .whitespacesAndNewlines))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .multilineTextAlignment(.leading)
-                    .textSelection(.enabled)
-                    .font(.system(size: 14 * scale))
-
-            }
-            
-        }
+        Text(description.trimmingCharacters(in: .whitespacesAndNewlines))
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .multilineTextAlignment(.leading)
+            .textSelection(.enabled)
+            .font(.system(size: 14 * scale))
+            .foregroundColor(Color.blue)
+            .onTapGesture(count: 1, perform: {
+                self.callback(url: fullUrl);
+            })
     }
 
     @ViewBuilder
     func renderCodeBlock(code: String) -> some View {
         ScrollView(.horizontal, showsIndicators: true) {
             Text(code)
-//                .font(.system(.body, design: .monospaced))
                 .lineLimit(nil) // Allow unlimited lines
                 .fixedSize(horizontal: true, vertical: false) // Fit content horizontally
                 .padding()

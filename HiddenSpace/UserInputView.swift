@@ -1,13 +1,5 @@
-//
-//  UserInputView.swift
-//  HiddenSpace
-//
-//  Created by Nick Yakovliev on 12/13/23.
-//
-
 import Foundation
 import SwiftUI
-
 
 struct UserInputView: View {
     let browser: HiddenSpaceView
@@ -27,22 +19,32 @@ struct UserInputView: View {
                 .font(.title)
                 .padding(.bottom, 8)
 
-            TextField("", text: self.$userInput)
+            // Replace TextField with TextEditor for multiline input
+            TextEditor(text: self.$userInput)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
+                .frame(minHeight: 100)  // Set a minimum height
                 .focused($isInputActive)
-                .onSubmit {
-                    self.browser.showingUserInput = false
-                    self.browser.geminiURL = self.browser.userInputUrl + "?" + self.encodeURI(string: self.userInput)
-                    self.browser.fetchGeminiContent()
-                }
-            Spacer()
 
+            // Add a Submit Button
+            Button(action: {
+                self.browser.showingUserInput = false
+                self.browser.geminiURL = self.browser.userInputUrl + "?" + self.encodeURI(string: self.userInput);
+                self.browser.fetchGeminiContent();
+            }) {
+                Text("Submit")
+                    .frame(minWidth: 0, maxWidth: .infinity)
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+            }
+            .padding()
+
+            Spacer()
         }
         .padding()
-        .background(Color.white)
         .cornerRadius(12)
-        .shadow(radius: 10)
         .onAppear {
             self.isInputActive = true
         }
