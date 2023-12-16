@@ -21,7 +21,7 @@ struct GeminiTextParser: View {
         String(data: data, encoding: .utf8) ?? ""
     }
 
-    let parentUrl: String
+    var parentUrl: String
     var urlClickedCallback: ((String?) -> Void)? = nil
     @State private var scale: CGFloat = 1.0
 
@@ -100,9 +100,7 @@ struct GeminiTextParser: View {
     }
 
     func addPrefixIfNeeded(url: String) -> String {
-        print (url, self.parentUrl);
         if url.contains("://") || url.starts(with: "mailto:") {
-            print(">", url)
             return url
         } else {
             var rootURL = self.parentUrl
@@ -113,11 +111,13 @@ struct GeminiTextParser: View {
             }
 
             if url.hasPrefix("/") {
-                if rootURL.hasSuffix("/") {
-                    print(">", "\(rootURL)\(url)")
+                if rootURL.hasSuffix("/") && url.hasPrefix("/") {
+                    var cleanUrl = url;
+                    return "\(rootURL)\(cleanUrl.removeFirst())";
+
+                } else if rootURL.hasSuffix("/") || url.hasPrefix("/") {
                     return "\(rootURL)\(url)"
                 } else {
-                    print(">", "\(rootURL)/\(url)")
                     return "\(rootURL)/\(url)"
                 }
             } else {
@@ -126,9 +126,10 @@ struct GeminiTextParser: View {
                     directoryURL = String(directoryURL[..<lastSlashIndex])
                 }
 
-                print("directoryURL", directoryURL)
-                print(">", "\(directoryURL)/\(url)")
-                if directoryURL.hasSuffix("/") || url.hasPrefix("/") {
+                if directoryURL.hasSuffix("/") && url.hasPrefix("/") {
+                    var cleanUrl = url;
+                    return "gemini://\(directoryURL)\(cleanUrl.removeFirst())";
+                }else if directoryURL.hasSuffix("/") || url.hasPrefix("/") {
                     return "gemini://\(directoryURL)\(url)"
                 } else {
                     return "gemini://\(directoryURL)/\(url)"

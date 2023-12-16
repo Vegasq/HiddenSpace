@@ -17,10 +17,15 @@ struct BookmarkListView: View {
         NavigationView {
             List {
                 ForEach(self.browser.settings.bookmarks, id: \.self) { bookmark in
-                    Button(bookmark) {
-                        self.browser.loadPage(url: bookmark)
-                        self.browser.showingBookmarkList = false
+                    HStack {
+                        Button(bookmark) {
+                            self.browser.loadPage(url: bookmark)
+                            self.browser.showingBookmarkList = false
+                        }
+                        Spacer()
+                        Text(String(self.browser.faviconCache.getFavicon(for: bookmark)))
                     }
+
                 }
                 .onDelete(perform: removeBookmarks)
                 .onMove(perform: moveBookmarks) // Add this line

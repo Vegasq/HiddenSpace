@@ -37,6 +37,9 @@ struct HiddenSpaceView: View {
 
     @State private var selectedHomepage: String?
     
+    var faviconCache: FaviconCache = FaviconCache();
+
+    
     var body: some View {
 
 // Something feels off about this part. In use feels unreliable. Need to think more.
@@ -180,6 +183,8 @@ struct HiddenSpaceView: View {
     }
 
     func fetchGeminiContent(addToHistory: Bool = true) {
+        self.faviconCache.fetch(url: self.URL);
+        
         self.isLoading = true;
 
         let url = Foundation.URL(string: self.URL);
