@@ -16,7 +16,11 @@ struct TextBlock {
 }
 
 struct GeminiTextParser: View {
-    let text: String
+    let data: Data;
+    var text: String {
+        String(data: data, encoding: .utf8) ?? ""
+    }
+
     let parentUrl: String
     var urlClickedCallback: ((String?) -> Void)? = nil
     @State private var scale: CGFloat = 1.0
@@ -95,7 +99,7 @@ struct GeminiTextParser: View {
     }
 
     func addPrefixIfNeeded(url: String) -> String {
-        if url.hasPrefix("gemini://") || url.hasPrefix("http://") || url.hasPrefix("https://") {
+        if url.contains("://") || url.starts(with: "mailto:") {
             return url
         } else {
             var rootURL = self.parentUrl

@@ -1,13 +1,7 @@
 import SwiftUI
 import Network
 
-#if canImport(UIKit)
-import UIKit // Import for iOS
-typealias PlatformImage = UIImage
-#elseif canImport(AppKit)
-import AppKit // Import for macOS
-typealias PlatformImage = NSImage
-#endif
+
 
 
 struct HiddenSpaceView: View {
@@ -17,7 +11,8 @@ struct HiddenSpaceView: View {
     @State var showingHistory = false;
 
     @State var geminiURL = "";
-    @State private var responseText = ""
+//    @State private var responseText = ""
+    @State private var responseContent = Data();
     @State private var responseContentType = ""
     @State private var responseStatusCode = 0
     
@@ -31,13 +26,14 @@ struct HiddenSpaceView: View {
     @State var userInputTitle = "";
     @State var userInputUrl = "";
 
-    @State private var image: PlatformImage? = nil;
     @State private var isLoading = false;
     
     @State private var loadingUrl = "";
 
     @State private var showingSettings = false;
     @State private var selectedHomepage: String?
+    
+    @State private var renderer: String = "text/gemini";
 
     var body: some View {
         let dragToRight = DragGesture()
@@ -57,18 +53,22 @@ struct HiddenSpaceView: View {
         return ScrollViewReader { proxy in
             VStack {
                 ScrollView {
-                    GeminiTextParser(text: self.responseText, parentUrl: self.geminiURL) { clickedUrl in
-                        if let url = clickedUrl {
-                            self.loadPage(url: url);
+                    if renderer == "text/gemini" {
+                        GeminiTextParser(data: self.responseContent, parentUrl: self.geminiURL) { clickedUrl in
+                            if let url = clickedUrl {
+                                self.loadPage(url: url);
+                            }
                         }
+                        .padding(.horizontal)
+                    } else if renderer == "image/jpeg" || renderer == "image/png" {
+                        ImageRenderer(uiimage: self.responseContent)
+                    } else if renderer == "text/plain" {
+                        PlainTextParser(data: self.responseContent)
+                            .padding(.horizontal)
+                    } else {
+                        Text("Content type not supported");
                     }
-                    .padding(.horizontal)
                     
-                    if let image = self.image {
-                        Image(uiImage: image)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                    }
                 }
                 .id("top")
                 .refreshable {
@@ -138,16 +138,16 @@ struct HiddenSpaceView: View {
                 .background(Color.gray.opacity(0.1))
                 
             }
-            .popover(isPresented: $showingBookmarkList) {
+            .sheet(isPresented: $showingBookmarkList) {
                 BookmarkListView(bookmarks: $settings.bookmarks, browser: self)
             }
-            .popover(isPresented: $showingHistory) {
+            .sheet(isPresented: $showingHistory) {
                 HistoryView(browser: self)
             }
-            .popover(isPresented: $showingUserInput){
+            .sheet(isPresented: $showingUserInput){
                 UserInputView(browser: self);
             }
-            .popover(isPresented: $showingSettings) {
+            .sheet(isPresented: $showingSettings) {
                 SettingsView(settings: self.settings)
             }
             .onAppear(perform: {
@@ -201,48 +201,40 @@ struct HiddenSpaceView: View {
             }
 
             self.isLoading = false;
-            self.image = nil;
+            self.responseContent = data ?? Data();
 
             self.responseStatusCode = statusCode;
             self.responseContentType = contentType;
 
             switch statusCode {
                 case 10...19:
+                    print("input");
+                    print(statusCode);
+                    print(self.responseContentType);
+                    self.goBack();
+
                     self.showingUserInput = true;
                     self.userInputTitle = contentType;
                     self.userInputUrl = host;
                 case 20...29:
-                    let contentTypeParts = contentType.split(separator: ";")
-                    switch contentTypeParts[0] {
-                        case "text/gemini":
-                            self.responseText = String(data: data ?? Data(), encoding: .utf8) ?? "";
-                        case "text/plain":
-                            self.responseText = String(data: data ?? Data(), encoding: .utf8) ?? "";
-                        case "image/jpeg":
-                            self.responseText = "";
-                            DispatchQueue.main.async {
-                                self.image = PlatformImage(data: data ?? Data());
-                            }
-                        case "image/png":
-                            self.responseText = "";
-                            DispatchQueue.main.async {
-                                self.image = PlatformImage(data: data ?? Data());
-                            }
-                        default:
-                            self.responseText = "Not supported url";
-                    }
+                    print()
                 case 30...39:
-                    self.responseText = "Redirecting to " + contentType
+                    let error = "Redirecting to \(contentType)." + (String(data: data ?? Data(), encoding: .utf8) ?? "");
+                    self.responseContent = error.data(using: .utf8)!;
                     self.geminiURL = contentType;
                     self.fetchGeminiContent();
                 case 40...49:
-                    self.responseText = "Temporary failure " + (String(data: data ?? Data(), encoding: .utf8) ?? "")
+                    let error = "Temporary failure " + (String(data: data ?? Data(), encoding: .utf8) ?? "");
+                    self.responseContent = error.data(using: .utf8)!;
                 case 50...59:
-                    self.responseText = "Permanent failure " + (String(data: data ?? Data(), encoding: .utf8) ?? "")
+                    let error = "Permanent failure " + (String(data: data ?? Data(), encoding: .utf8) ?? "");
+                    self.responseContent = error.data(using: .utf8)!;
                 case 60...69:
-                    self.responseText = "Not supported. Client certificate required. " + (String(data: data ?? Data(), encoding: .utf8) ?? "")
+                    let error = "Not supported. Client certificate required." + (String(data: data ?? Data(), encoding: .utf8) ?? "");
+                    self.responseContent = error.data(using: .utf8)!;
                 default:
-                    self.responseText = "Unknown status code \(statusCode)"
+                    let error = "Unknown status code \(statusCode)." + (String(data: data ?? Data(), encoding: .utf8) ?? "");
+                    self.responseContent = error.data(using: .utf8)!;
             }
             self.scrollToTop.toggle();
         }
