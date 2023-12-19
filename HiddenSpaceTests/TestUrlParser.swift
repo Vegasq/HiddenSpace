@@ -21,6 +21,7 @@ class GeminiTextParserTests: XCTestCase {
             ["parent": "gemini://example.com/", "url": "index.gmi", "expected": "gemini://example.com/index.gmi"],
             ["parent": "gemini://example.com", "url": "/index.gmi", "expected": "gemini://example.com/index.gmi"],
             ["parent": "gemini://example.com/path/file.gmi", "url": "/index.gmi", "expected": "gemini://example.com/index.gmi"],
+            ["parent": "gemini://example.com/path/file.gmi", "url": "index.gmi", "expected": "gemini://example.com/path/index.gmi"],
             ["parent": "gemini://example.com", "url": "gemini://example2.com", "expected": "gemini://example2.com"],
         ];
 
