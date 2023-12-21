@@ -84,11 +84,11 @@ struct HiddenSpaceView: View {
                 .refreshable {
                     self.fetchGeminiContent();
                 }
-                .onChange(of: scrollToTop) { _ in
+                .onChange(of: self.scrollToTop, {
                     withAnimation {
                         proxy.scrollTo(0)
                     }
-                }
+                })
                 
                 VStack{
                     HStack {

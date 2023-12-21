@@ -81,7 +81,7 @@ class FaviconCache {
                         print(host);
                         let content = String(data: data ?? Data(), encoding: .utf8) ?? "";
                         let parsedURL = Foundation.URL(string: host);
-                        var hostname = parsedURL?.host() ?? "";
+                        let hostname = parsedURL?.host() ?? "";
                         if hostname.count > 0 {
                             self.faviconCache[hostname] = String(content.first ?? " ");
                         }
