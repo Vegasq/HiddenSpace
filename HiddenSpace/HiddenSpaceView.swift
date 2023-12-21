@@ -193,10 +193,13 @@ struct HiddenSpaceView: View {
         }
 
         if addToHistory {
-            if navigationHistory.contains(self.URL) == false {
-                navigationHistory.append(self.URL);
-                navigationHistoryIndex = navigationHistory.count - 1;
-            }
+            // Back/Forward buttons should always have addToHistory == false,
+            // so clicks on the page assume current page is the last one in history
+            // and append next one to it.
+            self.navigationHistory = trimArray(array: self.navigationHistory, upToIndex: self.navigationHistoryIndex+1);
+
+            self.navigationHistory.append(self.URL);
+            self.navigationHistoryIndex = navigationHistory.count - 1;
         }
 
         let cl = Client(host: url?.host() ?? "", port: UInt16(url?.port ?? 1965), validateCert: false);
@@ -293,4 +296,12 @@ struct HiddenSpaceView_Previews: PreviewProvider {
         HiddenSpaceView()
             .previewDevice("iPhone 12")
     }
+}
+
+func trimArray<T>(array: [T], upToIndex index: Int) -> [T] {
+    // Ensure the index is within the bounds of the array
+    guard index < array.count else { return array }
+    
+    // Return the subsequence from 0 up to (but not including) the specified index
+    return Array(array.prefix(upTo: index))
 }
