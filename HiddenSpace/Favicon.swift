@@ -58,7 +58,7 @@ class FaviconCache {
         let favURL = "gemini://\(host):\(port)/favicon.txt";
 
         let cl = Client(host: parsedURL?.host() ?? "", port: UInt16(parsedURL?.port ?? 1965), validateCert: false);
-        cl.setupSecConnection();
+//        cl.setupSecConnection();
         cl.start();
         cl.dataReceivedCallback = self.processResponse(favURL);
         cl.send(data: (favURL + "\r\n").data(using: .utf8)!);

@@ -205,7 +205,7 @@ struct HiddenSpaceView: View {
         let cl = Client(host: url?.host() ?? "", port: UInt16(url?.port ?? 1965), validateCert: false);
         self.loadingUrl = self.URL;
 
-        cl.setupSecConnection();
+//        cl.setupSecConnection();
         cl.start();
         cl.dataReceivedCallback = self.displayGeminiContent(self.URL);
         cl.send(data: (self.URL + "\r\n").data(using: .utf8)!);
@@ -223,7 +223,11 @@ struct HiddenSpaceView: View {
             self.history.add(url: host);
 
             self.isLoading = false;
+            let maxData = 100 * 1024;
             self.responseContent = data ?? Data();
+            if self.responseContent.count > maxData {
+                self.responseContent = self.responseContent.subdata(in: 0..<8 * 1024);
+            }
 
             self.responseStatusCode = statusCode;
             
@@ -245,7 +249,7 @@ struct HiddenSpaceView: View {
                     self.userInputTitle = contentType;
                     self.userInputUrl = host;
                 case 20...29:
-                    print(self.responseContentType);
+                    print("\(host) -> \(self.responseContentType) \(self.responseContent.count)");
                 case 30...39:
                     let error = "Redirecting to \(contentType)." + (String(data: data ?? Data(), encoding: .utf8) ?? "");
                     self.responseContent = error.data(using: .utf8)!;

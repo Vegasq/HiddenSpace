@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		8C53247E2B2E039400989D19 /* Favicon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C53247D2B2E039400989D19 /* Favicon.swift */; };
 		8C53248E2B31FEE300989D19 /* TestUrlParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C53247F2B31FE3500989D19 /* TestUrlParser.swift */; };
+		8C5324942B35ECE900989D19 /* X509 in Frameworks */ = {isa = PBXBuildFile; productRef = 8C5324932B35ECE900989D19 /* X509 */; };
+		8C53249B2B3669E500989D19 /* SelfSignedCert in Frameworks */ = {isa = PBXBuildFile; productRef = 8C53249A2B3669E500989D19 /* SelfSignedCert */; };
 		8C5E02B82B236D830085D0A5 /* HiddenSpaceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5E02B72B236D830085D0A5 /* HiddenSpaceApp.swift */; };
 		8C5E02BA2B236D830085D0A5 /* HiddenSpaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5E02B92B236D830085D0A5 /* HiddenSpaceView.swift */; };
 		8C5E02BE2B236D840085D0A5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C5E02BD2B236D840085D0A5 /* Assets.xcassets */; };
@@ -69,6 +71,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8C53249B2B3669E500989D19 /* SelfSignedCert in Frameworks */,
+				8C5324942B35ECE900989D19 /* X509 in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -183,6 +187,8 @@
 			);
 			name = HiddenSpace;
 			packageProductDependencies = (
+				8C5324932B35ECE900989D19 /* X509 */,
+				8C53249A2B3669E500989D19 /* SelfSignedCert */,
 			);
 			productName = HiddenSpace;
 			productReference = 8C5E02B42B236D830085D0A5 /* HiddenSpace.app */;
@@ -217,6 +223,8 @@
 			);
 			mainGroup = 8C5E02AB2B236D830085D0A5;
 			packageReferences = (
+				8C5324922B35ECE900989D19 /* XCRemoteSwiftPackageReference "swift-certificates" */,
+				8C5324992B3669E500989D19 /* XCRemoteSwiftPackageReference "swift-SelfSignedCert" */,
 			);
 			productRefGroup = 8C5E02B52B236D830085D0A5 /* Products */;
 			projectDirPath = "";
@@ -539,6 +547,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		8C5324922B35ECE900989D19 /* XCRemoteSwiftPackageReference "swift-certificates" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-certificates.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.0;
+			};
+		};
+		8C5324992B3669E500989D19 /* XCRemoteSwiftPackageReference "swift-SelfSignedCert" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/svdo/swift-SelfSignedCert";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8C5324932B35ECE900989D19 /* X509 */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8C5324922B35ECE900989D19 /* XCRemoteSwiftPackageReference "swift-certificates" */;
+			productName = X509;
+		};
+		8C53249A2B3669E500989D19 /* SelfSignedCert */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8C5324992B3669E500989D19 /* XCRemoteSwiftPackageReference "swift-SelfSignedCert" */;
+			productName = SelfSignedCert;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 8C5E02AC2B236D830085D0A5 /* Project object */;
 }
