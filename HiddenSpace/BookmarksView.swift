@@ -23,7 +23,7 @@ struct BookmarkListView: View {
                             self.browser.showingBookmarkList = false
                         }
                         Spacer()
-                        Text(String(self.browser.faviconCache.getFavicon(for: bookmark)))
+                        Text(String(self.browser.faviconCache.getCachedFavicon(for: bookmark)))
                     }
 
                 }

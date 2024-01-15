@@ -22,6 +22,21 @@ class FaviconCache {
     private func saveCache() {
         UserDefaults.standard.set(faviconCache, forKey: "FaviconCache")
     }
+    
+    func getCachedFavicon(for url: String) -> String {
+        let parsedURL = Foundation.URL(string: url)
+
+        guard let host = parsedURL?.host, !host.isEmpty else {
+            return "";
+        }
+
+        // Check cache first
+        if let cachedFavicon = faviconCache[host] {
+            return String(cachedFavicon);
+        }
+
+        return "";
+    }
 
     func getFavicon(for url: String) -> String {
         let parsedURL = Foundation.URL(string: url)

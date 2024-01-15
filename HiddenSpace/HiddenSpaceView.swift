@@ -67,6 +67,8 @@ struct HiddenSpaceView: View {
                             }
                         }
                         .padding(.horizontal)
+                    } else if self.responseContentType == "error" {
+                        ErrorTextParser(data: self.responseContent)
                     } else if self.responseContentType == "image/jpeg" || self.responseContentType == "image/png" {
                         ImageRenderer(uiimage: self.responseContent)
                             .onAppear(){
@@ -76,7 +78,7 @@ struct HiddenSpaceView: View {
                         PlainTextParser(data: self.responseContent)
                             .padding(.horizontal)
                     } else {
-                        Text("Content type not supported");
+                        Text(self.responseContentType);
                     }
                     
                 }
@@ -213,7 +215,7 @@ struct HiddenSpaceView: View {
 
     func displayGeminiContent(_ host: String) -> (Error?, Data?, Int, String) -> Void {
         return  { error, data, statusCode, contentType in
-            
+            print("response", host, statusCode, contentType);
             // Avoid delayed queries to overwrite latest ones
             if host != self.loadingUrl {
                 print("Race condition in loading pages", host, "!=", self.loadingUrl);
@@ -223,14 +225,7 @@ struct HiddenSpaceView: View {
             self.history.add(url: host);
 
             self.isLoading = false;
-            let maxData = 100 * 1024;
-            self.responseContent = data ?? Data();
-            if self.responseContent.count > maxData {
-                self.responseContent = self.responseContent.subdata(in: 0..<8 * 1024);
-            }
 
-            self.responseStatusCode = statusCode;
-            
             // Ignoring ; lang=en
             if contentType.split(separator: ";", maxSplits: 1).count == 2 {
                 self.responseContentType = String(contentType.split(separator: ";")[0]);
@@ -238,11 +233,26 @@ struct HiddenSpaceView: View {
                 self.responseContentType = contentType;
             }
 
+            if ["image/png", "image/jpeg"].contains(self.responseContentType) == false {
+                let maxData = 100 * 1024;
+                self.responseContent = data ?? Data();
+                if self.responseContent.count > maxData {
+                    print("trim content")
+                    self.responseContent = self.responseContent.subdata(in: 0..<8 * 1024);
+                }
+            } else {
+                self.responseContent = data ?? Data();
+            }
+
+            self.responseStatusCode = statusCode;
+            
+
             switch statusCode {
+                case 0:
+                    self.responseContentType = "error";
+                    let error = "Host is unavailable." + (String(data: data ?? Data(), encoding: .utf8) ?? "");
+                    self.responseContent = error.data(using: .utf8)!;
                 case 10...19:
-                    print("input");
-                    print(statusCode);
-                    print(self.responseContentType);
                     self.goBack();
 
                     self.showingUserInput = true;
@@ -251,20 +261,25 @@ struct HiddenSpaceView: View {
                 case 20...29:
                     print("\(host) -> \(self.responseContentType) \(self.responseContent.count)");
                 case 30...39:
+                    self.responseContentType = "error";
                     let error = "Redirecting to \(contentType)." + (String(data: data ?? Data(), encoding: .utf8) ?? "");
                     self.responseContent = error.data(using: .utf8)!;
                     self.URL = contentType;
                     self.fetchGeminiContent(addToHistory: false);
                 case 40...49:
+                    self.responseContentType = "error";
                     let error = "Temporary failure " + (String(data: data ?? Data(), encoding: .utf8) ?? "");
                     self.responseContent = error.data(using: .utf8)!;
                 case 50...59:
+                    self.responseContentType = "error";
                     let error = "Permanent failure " + (String(data: data ?? Data(), encoding: .utf8) ?? "");
                     self.responseContent = error.data(using: .utf8)!;
                 case 60...69:
+                    self.responseContentType = "error";
                     let error = "Not supported. Client certificate required." + (String(data: data ?? Data(), encoding: .utf8) ?? "");
                     self.responseContent = error.data(using: .utf8)!;
                 default:
+                    self.responseContentType = "error";
                     let error = "Unknown status code \(statusCode)." + (String(data: data ?? Data(), encoding: .utf8) ?? "");
                     self.responseContent = error.data(using: .utf8)!;
             }
