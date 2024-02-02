@@ -86,6 +86,7 @@ class Settings: ObservableObject {
         self.homepage = NSUbiquitousKeyValueStore.default.object(forKey: "homepage") as? String ?? "gemini://geminispace.info/";
         self.bookmarks = NSUbiquitousKeyValueStore.default.object(forKey: "bookmarks") as? [String] ?? [
             "gemini://geminispace.info/",
+            "gemini://geminiprotocol.net/",
             "gemini://gemini.circumlunar.space/capcom/",
             "gemini://mozz.us/",
             "gemini://cdg.thegonz.net/",

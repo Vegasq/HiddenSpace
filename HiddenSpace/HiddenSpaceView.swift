@@ -185,6 +185,9 @@ struct HiddenSpaceView: View {
     }
 
     func fetchGeminiContent(addToHistory: Bool = true) {
+        if (self.URL.hasPrefix("gemini://") == false) {
+            self.URL = "gemini://" + self.URL;
+        }
         self.faviconCache.fetch(url: self.URL);
         
         self.isLoading = true;
@@ -250,7 +253,7 @@ struct HiddenSpaceView: View {
             switch statusCode {
                 case 0:
                     self.responseContentType = "error";
-                    let error = "Host is unavailable." + (String(data: data ?? Data(), encoding: .utf8) ?? "");
+                    let error = "Host \(host) is unavailable" + (String(data: data ?? Data(), encoding: .utf8) ?? "");
                     self.responseContent = error.data(using: .utf8)!;
                 case 10...19:
                     self.goBack();
@@ -262,7 +265,7 @@ struct HiddenSpaceView: View {
                     print("\(host) -> \(self.responseContentType) \(self.responseContent.count)");
                 case 30...39:
                     self.responseContentType = "error";
-                    let error = "Redirecting to \(contentType)." + (String(data: data ?? Data(), encoding: .utf8) ?? "");
+                    let error = "Redirecting to \(contentType)" + (String(data: data ?? Data(), encoding: .utf8) ?? "");
                     self.responseContent = error.data(using: .utf8)!;
                     self.URL = contentType;
                     self.fetchGeminiContent(addToHistory: false);
